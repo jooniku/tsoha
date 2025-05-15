@@ -1,9 +1,9 @@
 import sqlite3
-from flask import g
+from flask import g, current_app
 from config import DATABASE, SCHEMA
-from app import app
 
-def get_db():
+
+def _get_db():
     """Provide connection to database
 
     Database is defined in config file
@@ -18,7 +18,7 @@ def get_db():
     db.row_factory = sqlite3.Row
     return db
 
-@app.teardown_appcontext
+
 def close_db(exception):
     """Close database connection
 
@@ -31,8 +31,20 @@ def close_db(exception):
 
 
 def init_db():
-    with app.app_context():
-        db = get_db()
-        with app.open_resource(SCHEMA, mode="r") as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+    """Initialize database with schema from config file
+    """
+    db = _get_db()
+    with current_app.open_resource(SCHEMA, mode="r") as f:
+        db.cursor().executescript(f.read())
+    db.commit()
+
+
+def init_app(app):
+    """Register current app to database connection
+
+    Using this the connection will close properly
+
+    Args:
+        app: current app context
+    """
+    app.teardown_appcontext(close_db)
