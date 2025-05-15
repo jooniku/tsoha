@@ -1,6 +1,6 @@
 import sqlite3
 from flask import g
-from config import DATABASE
+from config import DATABASE, SCHEMA
 from app import app
 
 def get_db():
@@ -11,7 +11,7 @@ def get_db():
     Is called when connection to webpage is initialized
 
     """
-    db = getattr(g, '_database', None)
+    db = getattr(g, "_database", None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
     db.execute("PRAGMA foreign_keys = ON")
@@ -33,6 +33,6 @@ def close_db(exception):
 def init_db():
     with app.app_context():
         db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
+        with app.open_resource(SCHEMA, mode="r") as f:
             db.cursor().executescript(f.read())
         db.commit()
