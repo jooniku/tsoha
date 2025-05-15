@@ -19,7 +19,7 @@ def _get_db():
     return db
 
 
-def close_db(exception):
+def _close_db(exception):
     """Close database connection
 
     Args:
@@ -47,4 +47,15 @@ def init_app(app):
     Args:
         app: current app context
     """
-    app.teardown_appcontext(close_db)
+    app.teardown_appcontext(_close_db)
+
+def execute(sql, params=[]):
+    db = _get_db()
+    result = db.execute(sql, params)
+    db.commit()
+    g.last_insert_id = result.lastrowid
+
+
+def query(sql, params=[]):
+    db = _get_db()
+    return db.execute(sql, params).fetchall()

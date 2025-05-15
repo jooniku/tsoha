@@ -16,6 +16,10 @@ def init_db_command():
 
 @app.route("/")
 def index():
+    res = db.query("SELECT * FROM Users")
+    print(res)
+    for i in res[0]:
+        print(i)
     return render_template("index.html")
 
 @app.route("/user_page")
@@ -25,3 +29,21 @@ def user_page():
 @app.route("/message_board")
 def message_board():
     return render_template("message_board.html")
+
+
+
+'''l = db.execute("""
+            INSERT INTO users (username, email, password_hash, full_name, bio, profile_picture, university, is_admin)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+            'dummy_user',
+            'dummy@example.com',
+            'hashedpassword123',
+            'Dummy User',
+            'Just a test user.',
+            '/static/images/dummy.png',
+            'Test University',
+            0  # not admin
+            ))
+'''
