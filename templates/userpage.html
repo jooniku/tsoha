@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+    <div class="profile">
+        {% if user.profile_picture %}
+            <img src="{{ user.profile_picture }}" alt="Profile Picture">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" style="width:150px; height:150px; border-radius:50%; border:2px solid #ccc;">
+        {% endif %}
+
+        <h2>{{ user.full_name }}</h2>
+        <p>{{ user.username }}</p>
+
+        <div class="info">
+            <p><strong>Email:</strong> {{ user.email }}</p>
+            <p><strong>University:</strong> {{ user.university }}</p>
+            <p><strong>Bio:</strong> {{ user.bio or 'No bio provided.' }}</p>
+            {% if user.is_admin %}
+                <p><strong>Role:</strong> Admin</p>
+            {% endif %}
+        </div>
+{% endblock %}

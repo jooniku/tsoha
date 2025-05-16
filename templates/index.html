@@ -1,24 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-  <meta charset="utf-8" />
-  <title>Frontpage</title>
-</head>
+{% block title %}Front page{% endblock %}
 
- <div class="topnav">
-  <a class="active" href="/">Home</a>
-  <a href="/all_threads">All threads</a>
-  {% if session.username %}
-  <a href="/userpage">User page</a>
-  <a href="/logout">Logout</a>
-  {% else %}
-  <a href="/loginpage">Login</a>
-  <a href="/registerpage">Register</a>
-  {% endif %}
-</div> 
-
-<body>
+{% block content %}
   <h1>Welcome to the official website for the secret society message board!</h1>
 
   <!--This block tells about necessary messages, such as logout successful-->
@@ -39,6 +23,4 @@
   <h2>Latest posts:</h2>
   
 
-</body>
-
-</html>
+{% endblock %}

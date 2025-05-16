@@ -27,26 +27,33 @@ def index():
         print(i)
     return render_template("index.html")
 
-@app.route("/loginpage")
-def loginpage():
-    return render_template("loginpage.html")
+@app.route("/login_page")
+def login_page():
+    return render_template("login_page.html")
 
-@app.route("/registerpage")
-def registerpage():
-    return render_template("/registerpage.html")
+@app.route("/register_page")
+def register_page():
+    return render_template("/register_page.html")
 
-@app.route("/userpage")
-def user_page():
+@app.route("/user/<username>")
+def user_page(username):
     """Return user page if logged in. Else goto login.
 
     Returns:
         _type_: _description_
     """
-    if "username" in session:
-        return render_template("userpage.html")
-    flash("Error: Log in to view user page")
-    return render_template("loginpage.html")
+    
+    sql = """SELECT username,
+        email, full_name, bio,
+        profile_picture, university, is_admin, created_at
+        FROM users
+        WHERE username = ?
+        """
 
+    user = db.query(sql, [username])
+
+    return render_template("userpage.html", user=user)
+    
 @app.route("/all_threads", methods=["GET", "POST"])
 def all_threads():
     return render_template("all_threads.html")
@@ -93,7 +100,7 @@ def register():
         return "Error: username taken."
 
     flash("Your registration was successful!")
-    return redirect("/loginpage")
+    return redirect("/login_page")
     
 
 @app.route("/logout", methods=["POST", "GET"])
