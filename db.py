@@ -57,5 +57,8 @@ def execute(sql, params=[]):
 
 
 def query(sql, params=[]):
-    db = _get_db()
-    return db.execute(sql, params).fetchall()
+    try:
+        db = _get_db()
+        return db.execute(sql, params).fetchall()
+    except Exception as e:
+        return e

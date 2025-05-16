@@ -25,6 +25,10 @@ def index():
         print(i)
     return render_template("index.html")
 
+@app.route("/loginpage")
+def loginpage():
+    return render_template("loginpage.html")
+
 @app.route("/user_page")
 def user_page():
     """Return user page if logged in. Else goto login.
@@ -36,9 +40,9 @@ def user_page():
         return render_template("userpage.html")
     return render_template("loginpage.html")
 
-@app.route("/dashboard", methods=["GET", "POST"])
-def dashboard():
-    return render_template("dashboard.html")
+@app.route("/all_threads", methods=["GET", "POST"])
+def all_threads():
+    return render_template("all_threads.html")
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -52,12 +56,13 @@ def login():
     
     sql = "SELECT password_hash FROM users WHERE username = ?"
     password_hash = db.query(sql, [username])[0][0]
+    print(password_hash)
 
     if check_password_hash(password_hash, password):
         session["username"] = username
+        print(session["username"])
         return redirect("/")
-    else:
-        return "VIRHE: väärä tunnus tai salasana"
+    else: return "Error: wrong username or password"
 
 @app.route("/logout")
 def logout():

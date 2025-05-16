@@ -7,9 +7,14 @@
 </head>
 
 <body>
-  {% if session.username %}
   <h1>Welcome to the official website for the secret society message board!</h1>
-  <p>Hei {{ session.username }}</p>
+
+  {% if session.username %}
+  <p>Hello {{ session.username }}</p>
+  {% else %}
+  <p>You are not logged in.</p>
+  {% endif %}
+  <button onclick='document.location="/loginpage"'>Login</button>
 
   <h2>See all threads <a href="\all_threads">here</a></h2>
   <h2>Latest posts:</h2>
