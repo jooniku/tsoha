@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
+  <meta charset="utf-8" />
   <title>Frontpage</title>
 </head>
 
 <body>
-  <h1>Frontpage</h1>
-  <p>
-    <b>Welcome</b> to the application!
-  </p>
+  {% if session.username %}
+  <h1>Welcome to the official website for the secret society message board!</h1>
+  <p>Hei {{ session.username }}</p>
+
+  <h2>See all threads <a href="\all_threads">here</a></h2>
+  <h2>Latest posts:</h2>
+
 </body>
 
 </html>

@@ -1,9 +1,12 @@
-from flask import Flask
-from flask import render_template, current_app
+from flask import Flask, session, request, url_for, redirect, render_template, current_app
 from flask.cli import with_appcontext
+from werkzeug.security import check_password_hash
+import config
 import db
 
 app = Flask(__name__, template_folder="templates")
+app.secret_key = config.secret_key
+
 # Register teardown
 db.init_app(app)
 
@@ -24,11 +27,42 @@ def index():
 
 @app.route("/user_page")
 def user_page():
-    return render_template("userpage.html")
+    """Return user page if logged in. Else goto login.
 
-@app.route("/message_board")
-def message_board():
-    return render_template("message_board.html")
+    Returns:
+        _type_: _description_
+    """
+    if "username" in session:
+        return render_template("userpage.html")
+    return render_template("loginpage.html")
+
+@app.route("/dashboard", methods=["GET", "POST"])
+def dashboard():
+    return render_template("dashboard.html")
+
+@app.route("/login", methods=["POST"])
+def login():
+    """Login function. Taken from the course material.
+
+    Returns:
+        _type_: Main page or error
+    """
+    username = request.form["username"]
+    password = request.form["password"]
+    
+    sql = "SELECT password_hash FROM users WHERE username = ?"
+    password_hash = db.query(sql, [username])[0][0]
+
+    if check_password_hash(password_hash, password):
+        session["username"] = username
+        return redirect("/")
+    else:
+        return "VIRHE: väärä tunnus tai salasana"
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
 
 
