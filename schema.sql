@@ -2,7 +2,7 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
+    email TEXT UNIQUE,
     password_hash TEXT NOT NULL,
     full_name TEXT,
     bio TEXT,

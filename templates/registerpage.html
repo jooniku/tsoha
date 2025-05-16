@@ -1,0 +1,20 @@
+
+{% block content %}
+<h2>Register new user</h2>
+
+<form action="/register" method="post">
+  <p>
+    <label for="username">Username</label>: <br />
+    <input type="text" name="username" id="username" />
+  </p>
+  <p>
+    <label for="password">Password</label>: <br />
+    <input type="password" name="password1" id="password1" />
+  </p>
+    <p>
+    <label for="password">Password again</label>: <br />
+    <input type="password" name="password2" id="password2" />
+  </p>
+  <input type="submit" value="Register" />
+</form>
+{% endblock %}

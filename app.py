@@ -1,6 +1,7 @@
-from flask import Flask, session, request, url_for, redirect, render_template, current_app
+from flask import Flask, flash,  session, request, redirect, render_template, current_app
 from flask.cli import with_appcontext
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
+import sqlite3
 import config
 import db
 
@@ -28,6 +29,10 @@ def index():
 @app.route("/loginpage")
 def loginpage():
     return render_template("loginpage.html")
+
+@app.route("/registerpage")
+def registerpage():
+    return render_template("/registerpage.html")
 
 @app.route("/user_page")
 def user_page():
@@ -63,6 +68,30 @@ def login():
         print(session["username"])
         return redirect("/")
     else: return "Error: wrong username or password"
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    username = request.form["username"]
+    password1 = request.form["password1"]
+    password2 = request.form["password2"]
+
+    if password1 != password2:
+        return "Error: Passwords do not match."
+    
+    password_hash = generate_password_hash(password1)
+
+    try:
+        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
+        db.execute(sql, [username, password_hash])
+    except sqlite3.IntegrityError:
+        return "Error: username taken."
+
+    flash("Your registration was successful!")
+    return redirect("/loginpage")
+    
+
+    
 
 @app.route("/logout")
 def logout():
