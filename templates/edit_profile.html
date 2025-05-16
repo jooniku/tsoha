@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+
+<h2>Edit Your Profile</h2>
+
+<form method="post" enctype="multipart/form-data">
+  <label>Full Name:</label><br>
+  <input type="text" name="full_name" value="{{ user.full_name }}"><br><br>
+
+  <label>Bio:</label><br>
+  <textarea name="bio" rows="4">{{ user.bio }}</textarea><br><br>
+
+  <label>University:</label><br>
+  <input type="text" name="university" value="{{ user.university }}"><br><br>
+
+  <label>Upload New Profile Picture:</label><br>
+  <input type="file" name="profile_picture_file"><br><br>
+
+  <input type="submit" value="Save Changes">
+</form>
+
+{% endblock %}

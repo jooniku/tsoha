@@ -1,4 +1,4 @@
-from flask import Flask, flash,  session, request, redirect, render_template, current_app
+from flask import Flask, flash,  session, request, redirect, render_template, abort
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
@@ -7,10 +7,42 @@ import db
 from errors import *
 
 app = Flask(__name__, template_folder="templates")
-app.secret_key = config.secret_key
+app.secret_key = config.SECRET_KEY
 
 # Register teardown
 db.init_app(app)
+
+def authenticate_user(username:str=None):
+    """Helper function to check
+    that user is logged in. 
+
+    If username is given, the function makes sure
+    it corresponds to session user. For example, when
+    changing a users information the session user and the profile
+    must be equal.
+
+    If no user is provided, the function makes sure
+    there is a user logged in. For example when posting to a thread.
+    """
+    if username:
+        if username != session["username"]:
+            abort(403)
+    else: # needs to be just logged in
+        if "username" not in session: # just logged in
+            abort(403)
+
+def allowed_file(filename):
+    """Check if file is in the allowed extensions.
+    Configured in the config file
+
+    Args:
+        filename (str): filename
+
+    Returns:
+        bool
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
+
 
 @app.cli.command('init-db')
 @with_appcontext
@@ -25,38 +57,58 @@ def index():
     print(res)
     for i in res[0]:
         print(i)
-    return render_template("index.html")
+    return render_template("/index.html")
 
 @app.route("/login_page")
 def login_page():
-    return render_template("login_page.html")
+    return render_template("/login_page.html")
 
 @app.route("/register_page")
 def register_page():
     return render_template("/register_page.html")
 
 @app.route("/user/<username>")
-def user_page(username):
+def user_page(username:str):
     """Return user page if logged in. Else goto login.
 
     Returns:
         _type_: _description_
     """
+
+    another_profile = """SELECT username,
+        full_name, bio,
+        profile_picture, university
+        FROM users
+        WHERE username = ?
+        """
     
-    sql = """SELECT username,
+    own_profile = """SELECT username,
         email, full_name, bio,
         profile_picture, university, is_admin, created_at
         FROM users
         WHERE username = ?
         """
+    
+    if username == session.get("username"):
+        sql = own_profile
+    else:
+        sql = another_profile
 
-    user = db.query(sql, [username])
+    try:
+        user = db.query(sql, [username])[0]
+    except IndexError:
+        return "Error: No such profile found"
 
-    return render_template("userpage.html", user=user)
+    return render_template("/user_page.html", user=user)
+
+@app.route("/edit_profile", methods=["GET", "POST"])
+def edit_profile():
+    authenticate_user("lll")
+    # not finished
     
 @app.route("/all_threads", methods=["GET", "POST"])
 def all_threads():
-    return render_template("all_threads.html")
+    return render_template("/all_threads.html")
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -75,7 +127,6 @@ def login():
         password_hash = db.query(sql, [username])[0][0]
         if check_password_hash(password_hash, password):
             session["username"] = username
-            print(session["username"])
             return redirect("/")
         else: raise PasswordsDoNotMatch
     except (IndexError, PasswordsDoNotMatch):
@@ -110,19 +161,3 @@ def logout():
     return redirect("/")
 
 
-
-'''l = db.execute("""
-            INSERT INTO users (username, email, password_hash, full_name, bio, profile_picture, university, is_admin)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-            'dummy_user',
-            'dummy@example.com',
-            'hashedpassword123',
-            'Dummy User',
-            'Just a test user.',
-            '/static/images/dummy.png',
-            'Test University',
-            0  # not admin
-            ))
-'''
