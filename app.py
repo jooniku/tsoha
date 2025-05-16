@@ -35,7 +35,7 @@ def loginpage():
 def registerpage():
     return render_template("/registerpage.html")
 
-@app.route("/user_page")
+@app.route("/userpage")
 def user_page():
     """Return user page if logged in. Else goto login.
 
@@ -44,6 +44,7 @@ def user_page():
     """
     if "username" in session:
         return render_template("userpage.html")
+    flash("Error: Log in to view user page")
     return render_template("loginpage.html")
 
 @app.route("/all_threads", methods=["GET", "POST"])
