@@ -6,6 +6,18 @@
   <title>Frontpage</title>
 </head>
 
+ <div class="topnav">
+  <a class="active" href="/">Home</a>
+  <a href="/all_threads">All threads</a>
+  <a href="/userpage">User page</a>
+  {% if session.username %}
+  <a href="/logout">Logout</a>
+  {% else %}
+  <a href="/loginpage">Login</a>
+  <a href="/registerpage">Register</a>
+  {% endif %}
+</div> 
+
 <body>
   <h1>Welcome to the official website for the secret society message board!</h1>
 
@@ -20,17 +32,12 @@
   
   {% if session.username %}
   <p>Hello {{ session.username }}</p>
-  <form method="post" action="/logout">
-  <button type="submit">Logout</button>
-</form>
   {% else %}
   <p>You are not logged in.</p>
-  <button onclick='document.location="/loginpage"'>Login</button>
-  <button onclick='document.location="/registerpage"'>Register</button>
   {% endif %}
-  
-  <h2>See all threads <a href="\all_threads">here</a></h2>
+
   <h2>Latest posts:</h2>
+  
 
 </body>
 

@@ -95,7 +95,7 @@ def register():
     return redirect("/loginpage")
     
 
-@app.route("/logout", methods=["POST"])
+@app.route("/logout", methods=["POST", "GET"])
 def logout():
     session.clear()
     flash("You have been logged out.")
