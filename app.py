@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
 import config
 import db
+from errors import *
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = config.secret_key
@@ -52,6 +53,7 @@ def all_threads():
 @app.route("/login", methods=["POST"])
 def login():
     """Login function. Taken from the course material.
+    Changed some parts.
 
     Returns:
         _type_: Main page or error
@@ -60,14 +62,16 @@ def login():
     password = request.form["password"]
     
     sql = "SELECT password_hash FROM users WHERE username = ?"
-    password_hash = db.query(sql, [username])[0][0]
-    print(password_hash)
 
-    if check_password_hash(password_hash, password):
-        session["username"] = username
-        print(session["username"])
-        return redirect("/")
-    else: return "Error: wrong username or password"
+    try:
+        password_hash = db.query(sql, [username])[0][0]
+        if check_password_hash(password_hash, password):
+            session["username"] = username
+            print(session["username"])
+            return redirect("/")
+        else: raise PasswordsDoNotMatch
+    except (IndexError, PasswordsDoNotMatch):
+        return "Error: wrong username or password"
 
 
 @app.route("/register", methods=["POST"])
@@ -91,11 +95,10 @@ def register():
     return redirect("/loginpage")
     
 
-    
-
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
+    flash("You have been logged out.")
     return redirect("/")
 
 

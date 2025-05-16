@@ -9,14 +9,26 @@
 <body>
   <h1>Welcome to the official website for the secret society message board!</h1>
 
+  <!--This block tells about necessary messages, such as logout successful-->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+    {% endwith %}
+  
   {% if session.username %}
   <p>Hello {{ session.username }}</p>
+  <form method="post" action="/logout">
+  <button type="submit">Logout</button>
+</form>
   {% else %}
   <p>You are not logged in.</p>
-  {% endif %}
   <button onclick='document.location="/loginpage"'>Login</button>
   <button onclick='document.location="/registerpage"'>Register</button>
-
+  {% endif %}
+  
   <h2>See all threads <a href="\all_threads">here</a></h2>
   <h2>Latest posts:</h2>
 
