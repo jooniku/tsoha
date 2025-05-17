@@ -16,6 +16,7 @@ The idea of the project is to create a chatboard web-application, where users ca
 * Admin users can delete all posts, but not edit
 * Users can add profile picture
 * Posts can include images
+* Users can search for threads or posts
 
 ## Possible future application functions
 
