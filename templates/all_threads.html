@@ -4,13 +4,28 @@
 
 {% block content %}
 
- {% for thread in threads %}
+{% if session.username %}
+  <h2>New thread</h2>
+
+  <form action="/new_thread" method="post">
+    <p>
+      Title: <br />
+      <input type="text" name="title" />
+    </p>
+    <p>
+      Message: <br />
+      <textarea name="content" rows="5" cols="40"></textarea>
+    </p>
+    <input type="submit" value="submit" />
+  </form>
+{% endif %}
+
+  {% for thread in threads %}
   <p>
     <a href="/thread/{{ thread.id }}">{{ thread.title }}</a>
     <br />
     {{ thread.total }} posts in thread, most recent {{ thread.last }}
   </p>
-  <hr />
   {% endfor %}
 
 {% endblock %}

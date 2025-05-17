@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Thread thread.title {% endblock %}
+
+{% block content %}
+
+  {% for post in posts %}
+  <p>
+    <a href="/user/{{ post.username }}">{{ post.username }}</a> ({{ post.created_at }}):
+  </p>
+  <p>
+    {{ post.content }}
+  </p>
+  {% if post.user_id == session.user_id %}
+  <p>
+    <a href="/edit/{{ post.id }}">Edit</a> |
+    <a href="/remove/{{ post.id }}">Delete post</a>
+  </p>
+  {% endif %}
+  <hr />
+  {% endfor %}
+
+{% endblock %}

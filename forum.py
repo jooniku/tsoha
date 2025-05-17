@@ -1,4 +1,4 @@
-import flask
+from flask import Flask, flash
 import db
 
 
@@ -15,7 +15,7 @@ def get_posts(thread_id):
     """Get all posts to a specific thread.
     """
     sql = """SELECT p.id, p.content, p.created_at, p.user_id, u.username
-             FROM posts, users u
+             FROM posts p, users u
              WHERE p.user_id = u.id AND p.thread_id = ?
              ORDER BY p.id"""
     return db.query(sql, [thread_id])
@@ -28,3 +28,16 @@ def get_all_threads():
              ORDER BY t.id DESC"""
     return db.query(sql)
 
+def add_thread(title, content, user_id):
+    sql = "INSERT INTO threads (title, user_id) VALUES (?, ?)"
+    db.execute(sql, [title, user_id])
+    thread_id = db.last_insert_id()
+    add_post(content, user_id, thread_id)
+    flash("Thread created successfully")
+    return thread_id
+    
+def add_post(content, user_id, thread_id):
+    sql = """INSERT INTO posts (content, created_at, user_id, thread_id)
+             VALUES (?, datetime('now'), ?, ?)"""
+    db.execute(sql, [content, user_id, thread_id])
+    flash("Post added successfully")

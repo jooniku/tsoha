@@ -62,3 +62,6 @@ def query(sql, params=[]):
         return db.execute(sql, params).fetchall()
     except Exception as e:
         return e
+    
+def last_insert_id():
+    return g.last_insert_id

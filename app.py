@@ -112,7 +112,18 @@ def all_threads():
 def show_thread(thread_id):
     thread = forum.get_thread(thread_id)
     posts = forum.get_posts(thread_id)
+    print(posts)
     return render_template("thread.html", thread=thread, posts=posts)
+
+@app.route("/new_thread", methods=["POST"])
+def new_thread():
+    print(session)
+    title = request.form["title"]
+    content = request.form["content"]
+    user_id = session["user_id"]
+
+    thread_id = forum.add_thread(title, content, user_id)
+    return redirect("/thread/" + str(thread_id))
 
 
 @app.route("/login", methods=["POST"])
@@ -126,12 +137,13 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
     
-    sql = "SELECT password_hash FROM users WHERE username = ?"
+    sql = "SELECT id, password_hash FROM users WHERE username = ?"
 
     try:
-        password_hash = db.query(sql, [username])[0][0]
+        user_id, password_hash = db.query(sql, [username])[0]
         if check_password_hash(password_hash, password):
             session["username"] = username
+            session["user_id"] = user_id
             return redirect("/")
         else: raise PasswordsDoNotMatch
     except (IndexError, PasswordsDoNotMatch):
