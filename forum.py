@@ -29,6 +29,16 @@ def get_all_threads():
     return db.query(sql)
 
 def add_thread(title, content, user_id):
+    """Add a new thread. Also adds the first post.
+
+    Args:
+        title (str): _description_
+        content (str): _description_
+        user_id (int): _description_
+
+    Returns:
+        int: _description_
+    """
     sql = "INSERT INTO threads (title, user_id) VALUES (?, ?)"
     db.execute(sql, [title, user_id])
     thread_id = db.last_insert_id()
@@ -37,6 +47,8 @@ def add_thread(title, content, user_id):
     return thread_id
     
 def add_post(content, user_id, thread_id):
+    """Add new post.
+    """
     sql = """INSERT INTO posts (content, created_at, user_id, thread_id)
              VALUES (?, datetime('now'), ?, ?)"""
     db.execute(sql, [content, user_id, thread_id])
