@@ -53,10 +53,6 @@ def init_db_command():
 
 @app.route("/")
 def index():
-    res = db.query("SELECT * FROM Users")
-    print(res)
-    for i in res[0]:
-        print(i)
     return render_template("/index.html")
 
 @app.route("/login_page")
