@@ -5,6 +5,7 @@ import sqlite3
 import config
 import db
 from errors import *
+import forum
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = config.SECRET_KEY
@@ -104,7 +105,15 @@ def edit_profile():
     
 @app.route("/all_threads", methods=["GET", "POST"])
 def all_threads():
-    return render_template("/all_threads.html")
+    return render_template("/all_threads.html", threads=forum.get_all_threads())
+
+
+@app.route("/thread/<int:thread_id>")
+def show_thread(thread_id):
+    thread = forum.get_thread(thread_id)
+    posts = forum.get_posts(thread_id)
+    return render_template("thread.html", thread=thread, posts=posts)
+
 
 @app.route("/login", methods=["POST"])
 def login():

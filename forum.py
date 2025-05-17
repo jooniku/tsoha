@@ -20,4 +20,11 @@ def get_posts(thread_id):
              ORDER BY p.id"""
     return db.query(sql, [thread_id])
 
+def get_all_threads():
+    sql = """SELECT t.id, t.title, COUNT(p.id) total, MAX(p.created_at) last
+             FROM threads t, posts p
+             WHERE t.id = p.thread_id
+             GROUP BY t.id
+             ORDER BY t.id DESC"""
+    return db.query(sql)
 
