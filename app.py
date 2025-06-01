@@ -177,4 +177,13 @@ def logout():
     flash("You have been logged out.")
     return redirect("/")
 
-
+        
+@app.route("/find_post")
+def find_post():
+    query = request.args.get("query")
+    if query:
+        results = forum.find_post(query)
+    else:
+        query = ""
+        results = []
+    return render_template("find_post.html", query=query, results=results)
