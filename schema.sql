@@ -29,6 +29,9 @@ CREATE TABLE posts (
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     reply_to INTEGER REFERENCES posts(id),
+    edited BOOLEAN DEFAULT 0,
+    edit_time DATETIME DEFAULT None,
+    deleted BOOLEAN DEFAULT 0,
     FOREIGN KEY(thread_id) REFERENCES threads(id),
     FOREIGN KEY(user_id) REFERENCES users(id)
 );

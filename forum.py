@@ -15,13 +15,18 @@ def get_thread_id_by_post(post_id):
     sql = "SELECT thread_id FROM posts WHERE id = ?"
     return db.query(sql, [post_id])[0][0]
 
+def get_post_by_id_and_user(post_id, user_id):
+    sql = "SELECT * FROM posts WHERE id = ? AND user_id = ?"
+    return db.query(sql, [post_id, user_id])
+
 def get_posts(thread_id):
     """Get all posts to a specific thread.
     """
-    sql = """SELECT p.id, p.content, p.created_at, p.user_id, p.reply_to, u.username
-             FROM posts p, users u
-             WHERE p.user_id = u.id AND p.thread_id = ?
-             ORDER BY p.id"""
+    sql = """SELECT p.id, p.content, p.created_at, p.user_id, p.reply_to,
+            p.deleted, p.edited, p.edit_time, u.username
+            FROM posts p, users u
+            WHERE p.user_id = u.id AND p.thread_id = ?
+            ORDER BY p.id"""
     return db.query(sql, [thread_id])
 
 def get_all_threads():
@@ -58,11 +63,23 @@ def add_post(content, user_id, thread_id, reply_to=None):
     db.execute(sql, [content, user_id, thread_id, reply_to])
     flash("Post added successfully")
 
-def edit_post():
-    pass
+def edit_post(post_id, user_id, new_content):
+    sql = """
+        UPDATE posts
+        SET content = ?, edited = 1, edit_time = CURRENT_TIMESTAMP
+        WHERE id = ? AND user_id = ? AND deleted = 0
+    """
+    db.execute(sql, [new_content, post_id, user_id])
 
-def delete_post():
-    pass
+
+def delete_post(post_id, user_id):
+    sql = """
+        UPDATE posts
+        SET deleted = 1, content = "[deleted]"
+        WHERE id = ? AND user_id = ?
+    """
+    db.execute(sql, [post_id, user_id])
+
 
 def find_post(query):
     """Function to search the formun's threads

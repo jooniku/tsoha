@@ -24,11 +24,17 @@
   <h2>Latest posts</h2>
   <ul>
     {% for post in posts %}
-      <li>
+        <p>
+        {% if post.deleted %}
+        <em>This post was deleted.</em>
+        {% else %}
+        <li>
         <strong>{{ post.username }}</strong> in 
         <a href="/thread/{{ post.thread_id }}">{{ post.thread_title }}</a>
         ({{ post.created_at }}):
-        <p>{{ post.content }}</p>
+        {{ post.content }}
+        {% endif %}
+      </p>
       </li>
     {% endfor %}
   </ul>

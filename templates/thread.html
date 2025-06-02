@@ -6,23 +6,31 @@
   <h2>{{ thread.title }}</h2>
 
   {% for post in posts %}
-    {% set indent = indent_levels[post.id] %}
+  {% set indent = indent_levels[post.id] %}
 
     <div style="margin-left: {{ indent * 30 }}px; border-left: 1px solid #ccc; padding-left: 10px;">
       <p>
-        <a href="/user/{{ post.username }}">{{ post.username }}</a> ({{ post.created_at }}):
+        {% if post.deleted %}
+          [deleted]
+        {% else %}
+          <a href="/user/{{ post.username }}">{{ post.username }}</a> ({{ post.created_at }}):
+          <br>
+          {{ post.content }}
+          {% if post.edited %}
+            <br><small><em>Edited on {{ post.edit_time }}</em></small>
+          {% endif %}
+        {% endif %}
       </p>
-      <p>{{ post.content }}</p>
 
       <p>
-        {% if session.user_id %}
+        {% if session.user_id and not post.deleted %}
           <form method="get" action="{{ url_for('show_thread', thread_id=thread.id) }}" style="display:inline;">
             <input type="hidden" name="reply_to" value="{{ post.id }}">
             <button type="submit" class="btn btn-primary">Reply</button>
           </form>
         {% endif %}
-        {% if post.user_id == session.user_id %}
-          <form action="/edit/{{ post.id }}" method="post" style="display:inline;">
+        {% if post.user_id == session.user_id and not post.deleted %}
+          <form action="/edit/{{ post.id }}" method="get" style="display:inline;">
             <button type="submit" class="btn btn-warning">Edit</button>
           </form>
 

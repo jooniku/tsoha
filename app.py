@@ -182,6 +182,41 @@ def reply(post_id):
     flash("Reply posted successfully!", "success")
     return redirect(url_for("show_thread", thread_id=thread_id))
 
+@app.route("/remove/<int:post_id>", methods=["POST"])
+def remove(post_id):
+    authenticate_user()
+
+    user_id = session["user_id"]
+
+    forum.delete_post(post_id, user_id)
+
+    thread_id = forum.get_thread_id_by_post(post_id)
+    if thread_id:
+        return redirect(f"/thread/{thread_id}")
+
+    return redirect("/")
+
+@app.route("/edit/<int:post_id>", methods=["GET", "POST"])
+def edit(post_id):
+    authenticate_user()
+
+    user_id = session["user_id"]
+
+    post = forum.get_post_by_id_and_user(post_id, user_id)[0]
+    if not post:
+        return "Post not found or you don't have permission", 404
+
+    if request.method == "POST":
+        content = request.form.get("content")
+        if not content or content.strip() == "":
+            error = "Content cannot be empty."
+            return render_template("edit_post.html", post=post, error=error)
+
+        forum.edit_post(post_id, user_id, content.strip())
+        return redirect(f"/thread/{post['thread_id']}")
+
+    return render_template("edit_post.html", post=post)
+
 
 @app.route("/login", methods=["POST"])
 def login():
