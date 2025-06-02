@@ -119,7 +119,11 @@ def edit_profile():
     
 @app.route("/all_threads", methods=["GET", "POST"])
 def all_threads():
-    return render_template("/all_threads.html", threads=forum.get_all_threads())
+    topics = db.query("SELECT id, name FROM topics")
+    threads = forum.get_all_threads()
+    topics = forum.get_all_topics()
+
+    return render_template("/all_threads.html", threads=threads, topics=topics)
 
 
 @app.route("/thread/<int:thread_id>")

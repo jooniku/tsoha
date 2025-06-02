@@ -17,6 +17,7 @@ CREATE TABLE threads (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     user_id INTEGER NOT NULL,
+    topic TEXT DEFAULT general,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
@@ -59,4 +60,10 @@ CREATE TABLE images (
     FOREIGN KEY(thread_id) REFERENCES threads(id),
     FOREIGN KEY(post_id) REFERENCES posts(id),
     CHECK (thread_id IS NOT NULL OR post_id IS NOT NULL)  -- must be linked to at least one
+);
+
+-- Topics table
+CREATE TABLE topics (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL
 );
