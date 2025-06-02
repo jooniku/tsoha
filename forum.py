@@ -54,16 +54,27 @@ def add_post(content, user_id, thread_id):
     db.execute(sql, [content, user_id, thread_id])
     flash("Post added successfully")
 
-def find_item(query):
+def find_post(query):
     """Function to search the formun's threads
     or posts using a keyword.
     """
-    
-    sql = """SELECT DISTINCT threads.*
-    FROM threads
-    LEFT JOIN posts ON threads.id = posts.thread_id
-    WHERE threads.title LIKE ?
-    OR posts.content LIKE ?;
+    sql = """
+        SELECT threads.id AS thread_id,
+            threads.title AS thread_title,
+            NULL AS post_id,
+            NULL AS post_content
+        FROM threads
+        WHERE threads.title LIKE ?
+
+        UNION
+
+        SELECT threads.id AS thread_id,
+            threads.title AS thread_title,
+            posts.id AS post_id,
+            posts.content AS post_content
+        FROM threads
+        JOIN posts ON threads.id = posts.thread_id
+        WHERE posts.content LIKE ?
     """
     like = "%" + query + "%"
     return db.query(sql, [like, like])

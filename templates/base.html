@@ -9,6 +9,7 @@
     <div class="topnav">
         <a class="active" href="/">Home</a>
         <a href="/all_threads">All threads</a>
+        <a href="/find_post">Search posts</a>
 
         {% if session.username %}
         <a href="{{ url_for('user_page', username=session['username']) }}">My profile</a>

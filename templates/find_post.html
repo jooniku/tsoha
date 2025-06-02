@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Search for post{% endblock %}
+
+{% block content %}
+<h2>Search for thread or post</h2>
+
+<form action="/find_post" method="get">
+  <p>
+    <label for="query">Keyword</label>:
+    <input type="text" name="query" id="query" value="{{ query }}">
+  </p>
+  <input type="submit" value="Submit">
+</form>
+
+{% if query %}
+<h3>Results</h3>
+
+<ul>
+  {% for item in results %}
+    <li>
+      <a href="/thread/{{ item.thread_id }}">{{ item.thread_title }}</a>
+
+      {% if item.post_id %}
+        <ul>{{ item.post_content }}</ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+
+
+{% endif %}
+{% endblock %}
