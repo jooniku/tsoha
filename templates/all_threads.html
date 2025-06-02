@@ -32,11 +32,13 @@
   </form>
 {% endif %}
 
+
 {% for thread in threads %}
   <p>
-    <a href="/thread/{{ thread.id }}">{{ thread.title }}</a><br />
+    <a href="/thread/{{ thread.id }}">{{ thread.title }}</a> in {{ thread.topic_name or 'No topic' }}<br />
     {{ thread.total }} posts in thread, most recent {{ thread.last }}
   </p>
 {% endfor %}
+
 
 {% endblock %}

@@ -3,7 +3,8 @@
 {% block title %}Thread {{ thread.title }}{% endblock %}
 
 {% block content %}
-  <h2>{{ thread.title }}</h2>
+  <h2>{{ thread.title }}{% if thread.topic_name %} in topic: {{ thread.topic_name }}{% else %} (No topic){% endif %}</h2>
+  <p>{{ thread.total }} posts in thread, most recent {{ thread.last }}</p>
 
   {% for post in posts %}
   {% set indent = indent_levels[post.id] %}

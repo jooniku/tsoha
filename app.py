@@ -13,6 +13,12 @@ app.secret_key = config.SECRET_KEY
 # Register teardown
 db.init_app(app)
 
+def init_topics():
+    topics = ["world domination", "moonlanding", "general", "general conspiracy", "lizard people"]
+    for topic in topics:
+        forum.add_topic(topic)
+
+
 def authenticate_user(username:str=None):
     """Helper function to check
     that user is logged in. 
@@ -85,6 +91,7 @@ def get_latest_posts(num_posts=10):
 def init_db_command():
     """Initialize the database."""
     db.init_db()
+    init_topics()
     print("Initialized the database")
 
 @app.route("/")
@@ -123,6 +130,7 @@ def all_threads():
     threads = forum.get_all_threads()
     topics = forum.get_all_topics()
 
+
     return render_template("/all_threads.html", threads=threads, topics=topics)
 
 
@@ -130,17 +138,20 @@ def all_threads():
 def show_thread(thread_id):
     thread = forum.get_thread(thread_id)
     posts = forum.get_posts(thread_id)
+    topics = forum.get_all_topics()
+
     indent_levels, posts_dict = compute_indent_levels(posts)
-    return render_template("thread.html", thread=thread, posts=posts, indent_levels=indent_levels, posts_dict=posts_dict)
+    return render_template("thread.html", thread=thread, posts=posts, indent_levels=indent_levels, posts_dict=posts_dict, topics=topics)
 
 
 @app.route("/new_thread", methods=["POST"])
 def new_thread():
     title = request.form["title"]
     content = request.form["content"]
+    topic_id = request.form["topic_id"]
     user_id = session["user_id"]
 
-    thread_id = forum.add_thread(title, content, user_id)
+    thread_id = forum.add_thread(title, content, topic_id, user_id)
     return redirect("/thread/" + str(thread_id))
 
 @app.route("/reply/<int:post_id>", methods=["POST"])

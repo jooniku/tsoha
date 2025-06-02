@@ -8,7 +8,13 @@ def get_thread(thread_id):
     Args:
         thread_id (int)
     """
-    sql = "SELECT id, title, topic FROM threads WHERE id = ?"
+    sql = """SELECT threads.id, threads.title, threads.user_id, threads.created_at,
+        threads.topic_id, topics.name AS topic_name,
+        (SELECT COUNT(*) FROM posts WHERE posts.thread_id = threads.id) AS total,
+        (SELECT MAX(created_at) FROM posts WHERE posts.thread_id = threads.id) AS last
+        FROM threads
+        LEFT JOIN topics ON threads.topic_id = topics.id
+        WHERE threads.id = ?"""
     return db.query(sql, [thread_id])[0]
 
 def get_thread_id_by_post(post_id):
@@ -69,11 +75,13 @@ def get_posts_by_username(username):
 
 
 def get_all_threads():
-    sql = """SELECT t.id, t.title, t.topic, COUNT(p.id) total, MAX(p.created_at) last
-             FROM threads t, posts p
-             WHERE t.id = p.thread_id
-             GROUP BY t.id
-             ORDER BY t.id DESC"""
+    sql = """SELECT threads.id, threads.title, threads.topic_id, topics.name AS topic_name,
+    COUNT(posts.id) AS total, MAX(posts.created_at) AS last
+    FROM threads
+    LEFT JOIN topics ON threads.topic_id = topics.id
+    LEFT JOIN posts ON posts.thread_id = threads.id
+    GROUP BY threads.id
+    ORDER BY last DESC NULLS LAST;"""
     return db.query(sql)
 
 def get_all_topics():
@@ -84,20 +92,20 @@ def add_topic(topic):
     sql = "INSERT INTO topics (name) VALUES (?)"
     db.execute(sql, [topic])
 
-def add_thread(title, content, topic, user_id):
+def add_thread(title, content, topic_id, user_id):
     """Add a new thread. Also adds the first post.
 
     Args:
         title (str): _description_
         content (str): _description_
-        topic (str): _description_
+        topic_id (int): _description_
         user_id (int): _description_
 
     Returns:
         int: _description_
     """
-    sql = "INSERT INTO threads (title, topic, user_id) VALUES (?, ?, ?)"
-    db.execute(sql, [title, topic, user_id])
+    sql = "INSERT INTO threads (title, topic_id, user_id) VALUES (?, ?, ?)"
+    db.execute(sql, [title, topic_id, user_id])
     thread_id = db.last_insert_id()
     add_post(content, user_id, thread_id)
     flash("Thread created successfully")
@@ -107,7 +115,7 @@ def add_post(content, user_id, thread_id, reply_to=None):
     """Add new post.
     """
     sql = """INSERT INTO posts (content, created_at, user_id, thread_id, reply_to)
-             VALUES (?, datetime('now'), ?, ?, ?, ?)"""
+             VALUES (?, datetime('now'), ?, ?, ?)"""
     db.execute(sql, [content, user_id, thread_id, reply_to])
     flash("Post added successfully")
 

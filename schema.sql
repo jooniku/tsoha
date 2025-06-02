@@ -17,8 +17,9 @@ CREATE TABLE threads (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     user_id INTEGER NOT NULL,
-    topic TEXT DEFAULT general,
+    topic_id INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(topic_id) REFERENCES topics(id),
     FOREIGN KEY(user_id) REFERENCES users(id)
 );
 
