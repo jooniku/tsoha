@@ -28,6 +28,7 @@ CREATE TABLE posts (
     user_id INTEGER NOT NULL,
     content TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    reply_to INTEGER REFERENCES posts(id),
     FOREIGN KEY(thread_id) REFERENCES threads(id),
     FOREIGN KEY(user_id) REFERENCES users(id)
 );

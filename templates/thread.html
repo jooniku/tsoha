@@ -1,23 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Thread thread.title {% endblock %}
+{% block title %}Thread {{ thread.title }}{% endblock %}
 
 {% block content %}
+  <h2>{{ thread.title }}</h2>
 
   {% for post in posts %}
-  <p>
-    <a href="/user/{{ post.username }}">{{ post.username }}</a> ({{ post.created_at }}):
-  </p>
-  <p>
-    {{ post.content }}
-  </p>
-  {% if post.user_id == session.user_id %}
-  <p>
-    <a href="/edit/{{ post.id }}">Edit</a> |
-    <a href="/remove/{{ post.id }}">Delete post</a>
-  </p>
-  {% endif %}
-  <hr />
-  {% endfor %}
+    {% set indent = indent_levels[post.id] %}
 
+    <div style="margin-left: {{ indent * 30 }}px; border-left: 1px solid #ccc; padding-left: 10px;">
+      <p>
+        <a href="/user/{{ post.username }}">{{ post.username }}</a> ({{ post.created_at }}):
+      </p>
+      <p>{{ post.content }}</p>
+
+      <p>
+        {% if session.user_id %}
+          <form method="get" action="{{ url_for('show_thread', thread_id=thread.id) }}" style="display:inline;">
+            <input type="hidden" name="reply_to" value="{{ post.id }}">
+            <button type="submit" class="btn btn-primary">Reply</button>
+          </form>
+        {% endif %}
+        {% if post.user_id == session.user_id %}
+          <form action="/edit/{{ post.id }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-warning">Edit</button>
+          </form>
+
+          <form action="/remove/{{ post.id }}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Delete post</button>
+          </form>
+        {% endif %}
+      </p>
+
+      {% if request.args.get('reply_to') and request.args.get('reply_to')|int == post.id %}
+        <form action="/reply/{{ post.id }}" method="post" style="margin-top:10px;">
+          <textarea name="content" rows="3" cols="50" placeholder="Write your reply..." required></textarea><br>
+          <button type="submit" class="btn btn-success">Send Reply</button>
+        </form>
+      {% endif %}
+    </div>
+    <hr />
+  {% endfor %}
 {% endblock %}

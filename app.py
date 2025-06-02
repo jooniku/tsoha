@@ -1,4 +1,4 @@
-from flask import Flask, flash,  session, request, redirect, render_template, abort
+from flask import Flask, flash,  session, request, redirect, render_template, abort, url_for
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
@@ -43,6 +43,25 @@ def allowed_file(filename):
         bool
     """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
+
+def compute_indent_levels(posts):
+    posts_dict = {post["id"]: post for post in posts}
+    indent_levels = {}
+
+    def get_level(post_id):
+        level = 0
+        current = posts_dict.get(post_id)
+        while current and current["reply_to"]:
+            level += 1
+            parent_id = current["reply_to"]
+            current = posts_dict[parent_id] if parent_id in posts_dict else None
+        return level
+
+    for post in posts:
+        indent_levels[post["id"]] = get_level(post["id"])
+
+    return indent_levels, posts_dict
+
 
 
 @app.cli.command('init-db')
@@ -112,8 +131,9 @@ def all_threads():
 def show_thread(thread_id):
     thread = forum.get_thread(thread_id)
     posts = forum.get_posts(thread_id)
-    print(posts)
-    return render_template("thread.html", thread=thread, posts=posts)
+    indent_levels, posts_dict = compute_indent_levels(posts)
+    return render_template("thread.html", thread=thread, posts=posts, indent_levels=indent_levels, posts_dict=posts_dict)
+
 
 @app.route("/new_thread", methods=["POST"])
 def new_thread():
@@ -124,6 +144,27 @@ def new_thread():
 
     thread_id = forum.add_thread(title, content, user_id)
     return redirect("/thread/" + str(thread_id))
+
+@app.route("/reply/<int:post_id>", methods=["POST"])
+def reply(post_id):
+    authenticate_user()
+    content = request.form.get("content", "").strip()
+    user_id = session.get("user_id")
+
+    if not content:
+        flash("Reply content cannot be empty.", "error")
+        thread_id = forum.get_thread_id_by_post(post_id)
+        return redirect(url_for("show_thread", thread_id=thread_id, reply_to=post_id))
+
+    thread_id = forum.get_thread_id_by_post(post_id)
+    if thread_id is None:
+        flash("Invalid post or thread.", "error")
+        return redirect(url_for("index"))
+    
+    forum.add_post(content=content, user_id=user_id, thread_id=thread_id, reply_to=post_id)
+
+    flash("Reply posted successfully!", "success")
+    return redirect(url_for("show_thread", thread_id=thread_id))
 
 
 @app.route("/login", methods=["POST"])
