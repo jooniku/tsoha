@@ -62,6 +62,22 @@ def compute_indent_levels(posts):
 
     return indent_levels, posts_dict
 
+def get_latest_posts(num_posts=10):
+    sql = """
+        SELECT 
+            posts.id AS post_id,
+            posts.content,
+            posts.created_at,
+            posts.thread_id,
+            threads.title AS thread_title,
+            users.username
+        FROM posts
+        JOIN threads ON posts.thread_id = threads.id
+        JOIN users ON posts.user_id = users.id
+        ORDER BY posts.created_at DESC
+        LIMIT ?
+    """
+    return db.query(sql, [num_posts])
 
 
 @app.cli.command('init-db')
@@ -73,7 +89,8 @@ def init_db_command():
 
 @app.route("/")
 def index():
-    return render_template("/index.html")
+    posts=get_latest_posts()
+    return render_template("/index.html", posts=posts)
 
 @app.route("/login_page")
 def login_page():
@@ -137,7 +154,6 @@ def show_thread(thread_id):
 
 @app.route("/new_thread", methods=["POST"])
 def new_thread():
-    print(session)
     title = request.form["title"]
     content = request.form["content"]
     user_id = session["user_id"]

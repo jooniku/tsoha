@@ -20,7 +20,16 @@
   <p>You are not logged in.</p>
   {% endif %}
 
-  <h2>Latest posts:</h2>
-  
 
+  <h2>Latest posts</h2>
+  <ul>
+    {% for post in posts %}
+      <li>
+        <strong>{{ post.username }}</strong> in 
+        <a href="/thread/{{ post.thread_id }}">{{ post.thread_title }}</a>
+        ({{ post.created_at }}):
+        <p>{{ post.content }}</p>
+      </li>
+    {% endfor %}
+  </ul>
 {% endblock %}
