@@ -8,10 +8,10 @@ The idea of the project is to create a chatboard web-application, where users ca
 * Users can create new threads
 * Users can view other user's profiles
 * Users can see all threads
+* Users can edit and delete posts
 
 ## Future application functions
 
-* Users can edit and delete posts and threads
 * Users can edit and delete their profiles
 * Admin users can delete all posts, but not edit
 * Users can add profile picture
