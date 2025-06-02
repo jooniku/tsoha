@@ -107,32 +107,10 @@ def user_page(username:str):
     Returns:
         _type_: _description_
     """
+    user = forum.get_user_with_username(username)
+    posts = forum.get_posts_by_username(username)
 
-    another_profile = """SELECT username,
-        full_name, bio,
-        profile_picture, university
-        FROM users
-        WHERE username = ?
-        """
-    
-    own_profile = """SELECT username,
-        email, full_name, bio,
-        profile_picture, university, is_admin, created_at
-        FROM users
-        WHERE username = ?
-        """
-    
-    if username == session.get("username"):
-        sql = own_profile
-    else:
-        sql = another_profile
-
-    try:
-        user = db.query(sql, [username])[0]
-    except IndexError:
-        return "Error: No such profile found"
-
-    return render_template("/user_page.html", user=user)
+    return render_template("/user_page.html", user=user, posts=posts)
 
 @app.route("/edit_profile", methods=["GET", "POST"])
 def edit_profile():

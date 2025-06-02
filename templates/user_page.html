@@ -11,9 +11,8 @@
         {% endif %}
         
         {% if session.username == user.username %}
-        <a href="{{ url_for('edit_profile') }}">Edit My Profile</a>
+            <a href="{{ url_for('edit_profile') }}">Edit My Profile</a>
         {% endif %}
-
 
         <h2>{{ user.full_name or 'Anonymous' }}</h2>
         <p>{{ user.username }}</p>
@@ -27,4 +26,27 @@
                 <p><strong>Role:</strong> Admin</p>
             {% endif %}
         </div>
+    
+        <div class="user-posts">
+            <h2>{{ user.username }}'s Posts</h2>
+            {% if posts %}
+                <ul>
+                    {% for post in posts %}
+                        <li>
+                            <p>
+                                <strong>In thread:</strong> 
+                                <a href="{{ url_for('show_thread', thread_id=post.thread_id) }}">
+                                    {{ post.thread_title }}
+                                </a><br>
+                                <strong>Posted on:</strong> {{ post.created_at }}<br>
+                                {{ post.content }}
+                            </p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>This user hasn't posted anything yet.</p>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

@@ -1,4 +1,4 @@
-from flask import Flask, flash
+from flask import Flask, flash, session
 import db
 
 
@@ -19,6 +19,33 @@ def get_post_by_id_and_user(post_id, user_id):
     sql = "SELECT * FROM posts WHERE id = ? AND user_id = ?"
     return db.query(sql, [post_id, user_id])
 
+def get_user_with_username(username:str):
+
+    another_profile = """SELECT username,
+        full_name, bio,
+        profile_picture, university
+        FROM users
+        WHERE username = ?
+        """
+    
+    own_profile = """SELECT username,
+        email, full_name, bio,
+        profile_picture, university, is_admin, created_at
+        FROM users
+        WHERE username = ?
+        """
+    
+    if username == session.get("username"):
+        sql = own_profile
+    else:
+        sql = another_profile
+
+    try:
+        user = db.query(sql, [username])[0]
+    except IndexError:
+        return "Error: No such profile found"
+    return user
+
 def get_posts(thread_id):
     """Get all posts to a specific thread.
     """
@@ -28,6 +55,18 @@ def get_posts(thread_id):
             WHERE p.user_id = u.id AND p.thread_id = ?
             ORDER BY p.id"""
     return db.query(sql, [thread_id])
+
+def get_posts_by_username(username):
+    sql = """
+        SELECT posts.id, posts.content, posts.created_at, posts.thread_id, threads.title AS thread_title
+        FROM posts
+        JOIN users ON posts.user_id = users.id
+        JOIN threads ON posts.thread_id = threads.id
+        WHERE users.username = ?
+        ORDER BY posts.created_at DESC
+    """
+    return db.query(sql, [username])
+
 
 def get_all_threads():
     sql = """SELECT t.id, t.title, COUNT(p.id) total, MAX(p.created_at) last
