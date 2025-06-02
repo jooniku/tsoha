@@ -80,6 +80,10 @@ def get_all_topics():
     sql = "SELECT id, name FROM topics"
     return db.query(sql)
 
+def add_topic(topic):
+    sql = "INSERT INTO topics (name) VALUES (?)"
+    db.execute(sql, [topic])
+
 def add_thread(title, content, topic, user_id):
     """Add a new thread. Also adds the first post.
 
