@@ -1,29 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}Login page{% endblock %}
+{% block title %}Login Page{% endblock %}
 
 {% block content %}
+  <div class="page-container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p class="flash-message">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
-<!--This block tells if registration was successful-->
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    {% for message in messages %}
-      <p>{{ message }}</p>
-    {% endfor %}
-  {% endif %}
-{% endwith %}
+    <h2 class="section-title">Log In</h2>
 
-<h2>Log in</h2>
+    <form action="/login" method="post" class="form-box">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" required />
+      </div>
 
-<form action="/login" method="post">
-  <p>
-    <label for="username">Username</label>: <br />
-    <input type="text" name="username" id="username" />
-  </p>
-  <p>
-    <label for="password">Password</label>: <br />
-    <input type="password" name="password" id="password" />
-  </p>
-  <input type="submit" value="Login" />
-</form>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+  </div>
 {% endblock %}

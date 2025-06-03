@@ -7,19 +7,34 @@
 
 <body>
     <!-- Top navigation visible everywhere -->
-    <div class="topnav">
-        <a class="active" href="/">Home</a>
-        <a href="/all_threads">All threads</a>
-        <a href="/find_post">Search posts</a>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a class="active" href="/">Home</a>
+            <a href="/all_threads">All threads</a>
+            <a href="/find_post">Search posts</a>
 
+            {% if session.username %}
+                <a href="{{ url_for('user_page', username=session['username']) }}">My profile</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </div>
         {% if session.username %}
-        <a href="{{ url_for('user_page', username=session['username']) }}">My profile</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
+            <div class="navbar-right">
+            <span class="username">{{ session.username }}</span>
+            {% if current_user.profile_picture %}
+                <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
+            {% else %}
+                <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" class="profile-pic">
+            {% endif %}
+            </div>
         {% else %}
-        <a href="{{ url_for('login_page') }}">Login</a>
-        <a href="{{ url_for('register_page') }}">Register</a>
+            <div class="navbar-left">
+            <a href="{{ url_for('login_page') }}">Login</a>
+            <a href="{{ url_for('register_page') }}">Register</a>
+            </div>
         {% endif %}
-    </div>
+
+    </nav>
 
 
 

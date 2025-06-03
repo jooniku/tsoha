@@ -1,34 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Search for post{% endblock %}
+{% block title %}Search for Post{% endblock %}
 
 {% block content %}
-<h2>Search for thread or post</h2>
+  <div class="page-container">
+    <h2 class="section-title">Search for Thread or Post</h2>
 
-<form action="/find_post" method="get">
-  <p>
-    <label for="query">Keyword</label>:
-    <input type="text" name="query" id="query" value="{{ query }}">
-  </p>
-  <input type="submit" value="Submit">
-</form>
+    <form action="/find_post" method="get" class="form-box">
+      <div class="form-group">
+        <label for="query">Keyword:</label>
+        <input type="text" name="query" id="query" value="{{ query }}" required />
+      </div>
 
-{% if query %}
-<h3>Results</h3>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
 
-<ul>
-  {% for item in results %}
-    <li>
-      <a href="/thread/{{ item.thread_id }}">{{ item.thread_title }}</a>
+    {% if query %}
+      <h3 class="section-subtitle">Results for "{{ query }}"</h3>
 
-      {% if item.post_id %}
-        <ul>{{ item.post_content }}</ul>
+      {% if results %}
+        <ul class="results-list">
+          {% for item in results %}
+            <li class="result-item">
+              <a href="/thread/{{ item.thread_id }}" class="thread-link">{{ item.thread_title }}</a>
+              {% if item.post_id %}
+                <div class="post-snippet">{{ item.post_content }}</div>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No results found.</p>
       {% endif %}
-    </li>
-  {% endfor %}
-</ul>
-
-
-
-{% endif %}
+    {% endif %}
+  </div>
 {% endblock %}

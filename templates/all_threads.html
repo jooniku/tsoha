@@ -3,42 +3,50 @@
 {% block title %}All threads{% endblock %}
 
 {% block content %}
+<div class="container">
 
-{% if session.username %}
-  <h2>New thread</h2>
+  {% if session.username %}
+    <h2 class="text-center">New Thread</h2>
 
-  <form action="/new_thread" method="post">
-    <p>
-      Title: <br />
-      <input type="text" name="title" required />
-    </p>
+    <form action="/new_thread" method="post">
+      <div class="mb-4">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required />
+      </div>
 
-    <p>
-      Topic: <br />
-      <select name="topic_id" required>
-        <option value="">-- Select a topic --</option>
-        {% for topic in topics %}
-          <option value="{{ topic.id }}">{{ topic.name }}</option>
-        {% endfor %}
-      </select>
-    </p>
+      <div class="mb-4">
+        <label for="topic_id">Topic:</label>
+        <select id="topic_id" name="topic_id" required>
+          <option value="">-- Select a topic --</option>
+          {% for topic in topics %}
+            <option value="{{ topic.id }}">{{ topic.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
-    <p>
-      Message: <br />
-      <textarea name="content" rows="5" cols="40" required></textarea>
-    </p>
+      <div class="mb-4">
+        <label for="content">Message:</label>
+        <textarea id="content" name="content" rows="5" required></textarea>
+      </div>
 
-    <input type="submit" value="Submit" />
-  </form>
-{% endif %}
+      <input type="submit" value="Submit" />
+    </form>
+  {% endif %}
 
+  <div class="mt-4">
+    <h2 class="text-center">All Threads</h2>
+    {% for thread in threads %}
+      <div class="mb-4">
+        <p>
+          <a href="/thread/{{ thread.id }}"><strong>{{ thread.title }}</strong></a>
+          <br />
+          <small>in {{ thread.topic_name or 'No topic' }}</small>
+        </p>
+        <p>{{ thread.total }} posts, most recent: {{ thread.last }}</p>
+        <hr />
+      </div>
+    {% endfor %}
+  </div>
 
-{% for thread in threads %}
-  <p>
-    <a href="/thread/{{ thread.id }}">{{ thread.title }}</a> in {{ thread.topic_name or 'No topic' }}<br />
-    {{ thread.total }} posts in thread, most recent {{ thread.last }}
-  </p>
-{% endfor %}
-
-
+</div>
 {% endblock %}

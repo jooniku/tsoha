@@ -3,39 +3,42 @@
 {% block title %}Front page{% endblock %}
 
 {% block content %}
-  <h1>Welcome to the official website for the secret society message board!</h1>
+<div class="container text-center">
+  <h1 class="main-heading">Welcome to the official website for the secret society message board!</h1>
 
-  <!--This block tells about necessary messages, such as logout successful-->
   {% with messages = get_flashed_messages() %}
     {% if messages %}
-      {% for message in messages %}
-        <p>{{ message }}</p>
-      {% endfor %}
+      <div class="flash-messages">
+        {% for message in messages %}
+          <p class="alert">{{ message }}</p>
+        {% endfor %}
+      </div>
     {% endif %}
-    {% endwith %}
-  
+  {% endwith %}
+
   {% if session.username %}
-  <p>Hello {{ session.username }}</p>
+    <p class="greeting">Hello, <strong>{{ session.username }}</strong></p>
   {% else %}
-  <p>You are not logged in.</p>
+    <p class="greeting">You are not logged in.</p>
   {% endif %}
 
+  <div class="thread-list mt-4">
+    <h2>Latest posts</h2>
 
-  <h2>Latest posts</h2>
-  <ul>
     {% for post in posts %}
-        <p>
+      <div class="thread-card">
         {% if post.deleted %}
-        <em>This post was deleted.</em>
+          <p><em>This post was deleted.</em></p>
         {% else %}
-        <li>
-        <strong>{{ post.username }}</strong> in 
-        <a href="/thread/{{ post.thread_id }}">{{ post.thread_title }}</a>
-        ({{ post.created_at }}):
-        {{ post.content }}
+          <p>
+            <strong>{{ post.username }}</strong> in
+            <a href="/thread/{{ post.thread_id }}" class="thread-link">{{ post.thread_title }}</a>
+          </p>
+          <p class="post-meta">Posted on {{ post.created_at }}</p>
+          <p class="post-content">{{ post.content }}</p>
         {% endif %}
-      </p>
-      </li>
+      </div>
     {% endfor %}
-  </ul>
+  </div>
+</div>
 {% endblock %}

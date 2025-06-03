@@ -3,50 +3,56 @@
 {% block title %}User Profile{% endblock %}
 
 {% block content %}
-    <div class="profile">
-        {% if user.profile_picture %}
-            <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
-        {% else %}
-            <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" class="profile-pic">
-        {% endif %}
-        
-        {% if session.username == user.username %}
-            <a href="{{ url_for('edit_profile') }}">Edit My Profile</a>
-        {% endif %}
+<div class="container text-center">
 
-        <h2>{{ user.full_name or 'Anonymous' }}</h2>
-        <p>{{ user.username }}</p>
+  <div class="profile mb-4">
+    {% if user.profile_picture %}
+      <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" class="profile-pic mb-2">
+    {% else %}
+      <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" class="profile-pic mb-2">
+    {% endif %}
 
-        <div class="info">
-            <p><strong>Email:</strong> {{ user.email }}</p>
-            <p><strong>University:</strong> {{ user.university }}</p>
-            <p><strong>Bio:</strong> {{ user.bio or 'No bio provided.' }}</p>
-            <p><strong>Time created:</strong> {{ user.created_at }}</p>
-            {% if user.is_admin %}
-                <p><strong>Role:</strong> Admin</p>
-            {% endif %}
-        </div>
-    
-        <div class="user-posts">
-            <h2>{{ user.username }}'s Posts</h2>
-            {% if posts %}
-                <ul>
-                    {% for post in posts %}
-                        <li>
-                            <p>
-                                <strong>In thread:</strong> 
-                                <a href="{{ url_for('show_thread', thread_id=post.thread_id) }}">
-                                    {{ post.thread_title }}
-                                </a><br>
-                                <strong>Posted on:</strong> {{ post.created_at }}<br>
-                                {{ post.content }}
-                            </p>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>This user hasn't posted anything yet.</p>
-            {% endif %}
-        </div>
+    {% if session.username == user.username %}
+      <div class="mb-3">
+        <a href="{{ url_for('edit_profile') }}" class="btn-link">Edit My Profile</a>
+      </div>
+    {% endif %}
+
+    <h2>{{ user.full_name or 'Anonymous' }}</h2>
+    <p class="username muted">@{{ user.username }}</p>
+
+    <div class="info text-left mt-4 mb-4">
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>University:</strong> {{ user.university }}</p>
+      <p><strong>Bio:</strong> {{ user.bio or 'No bio provided.' }}</p>
+      <p><strong>Time created:</strong> {{ user.created_at }}</p>
+      {% if user.is_admin %}
+        <p><strong>Role:</strong> Admin</p>
+      {% endif %}
     </div>
+  </div>
+
+  <div class="user-posts text-left">
+    <h2 class="text-center">{{ user.username }}'s Posts</h2>
+    {% if posts %}
+      <ul class="post-list">
+        {% for post in posts %}
+          <li class="post-item mb-3">
+            <p>
+              <strong>In thread:</strong>
+              <a href="{{ url_for('show_thread', thread_id=post.thread_id) }}">
+                {{ post.thread_title }}
+              </a><br>
+              <small><strong>Posted on:</strong> {{ post.created_at }}</small><br>
+              {{ post.content }}
+            </p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">This user hasn't posted anything yet.</p>
+    {% endif %}
+  </div>
+
+</div>
 {% endblock %}

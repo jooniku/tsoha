@@ -18,6 +18,12 @@ def init_topics():
     for topic in topics:
         forum.add_topic(topic)
 
+@app.context_processor
+def inject_user():
+    user = None
+    if "user_id" in session:
+        user = forum.get_user_by_id(session["user_id"])
+    return dict(current_user=user)
 
 def authenticate_user(username:str=None):
     """Helper function to check
@@ -93,6 +99,7 @@ def init_db_command():
     db.init_db()
     init_topics()
     print("Initialized the database")
+
 
 @app.route("/")
 def index():

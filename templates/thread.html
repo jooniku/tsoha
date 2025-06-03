@@ -3,51 +3,61 @@
 {% block title %}Thread {{ thread.title }}{% endblock %}
 
 {% block content %}
-  <h2>{{ thread.title }}{% if thread.topic_name %} in topic: {{ thread.topic_name }}{% else %} (No topic){% endif %}</h2>
-  <p>{{ thread.total }} posts in thread, most recent {{ thread.last }}</p>
+<div class="container">
 
-  {% for post in posts %}
-  {% set indent = indent_levels[post.id] %}
+  <div class="thread-header text-center mb-4">
+    <h2>{{ thread.title }}{% if thread.topic_name %} in topic: {{ thread.topic_name }}{% else %} (No topic){% endif %}</h2>
+    <p class="muted">{{ thread.total }} posts in thread, most recent {{ thread.last }}</p>
+  </div>
 
-    <div style="margin-left: {{ indent * 30 }}px; border-left: 1px solid #ccc; padding-left: 10px;">
-      <p>
-        {% if post.deleted %}
-          [deleted]
-        {% else %}
-          <a href="/user/{{ post.username }}">{{ post.username }}</a> ({{ post.created_at }}):
-          <br>
-          {{ post.content }}
-          {% if post.edited %}
-            <br><small><em>Edited on {{ post.edit_time }}</em></small>
+  <div class="posts-section">
+    {% for post in posts %}
+      {% set indent = indent_levels[post.id] %}
+
+      <div class="post-item" style="margin-left: {{ indent * 30 }}px;">
+        <div class="post-content">
+          {% if post.deleted %}
+            <p class="muted">[deleted]</p>
+          {% else %}
+            <p>
+              <a href="/user/{{ post.username }}" class="author-link">{{ post.username }}</a>
+              <span class="post-date">({{ post.created_at }})</span><br>
+              {{ post.content }}
+              {% if post.edited %}
+                <br><small><em>Edited on {{ post.edit_time }}</em></small>
+              {% endif %}
+            </p>
           {% endif %}
-        {% endif %}
-      </p>
+        </div>
 
-      <p>
         {% if session.user_id and not post.deleted %}
-          <form method="get" action="{{ url_for('show_thread', thread_id=thread.id) }}" style="display:inline;">
-            <input type="hidden" name="reply_to" value="{{ post.id }}">
-            <button type="submit" class="btn btn-primary">Reply</button>
+          <div class="post-actions">
+            <form method="get" action="{{ url_for('show_thread', thread_id=thread.id) }}" class="inline-form">
+              <input type="hidden" name="reply_to" value="{{ post.id }}">
+              <button type="submit" class="btn btn-primary">Reply</button>
+            </form>
+            {% if post.user_id == session.user_id %}
+              <form action="/edit/{{ post.id }}" method="get" class="inline-form">
+                <button type="submit" class="btn btn-warning">Edit</button>
+              </form>
+
+              <form action="/remove/{{ post.id }}" method="post" class="inline-form">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        {% if request.args.get('reply_to') and request.args.get('reply_to')|int == post.id %}
+          <form action="/reply/{{ post.id }}" method="post" class="reply-form">
+            <textarea name="content" rows="3" cols="50" placeholder="Write your reply..." required></textarea><br>
+            <button type="submit" class="btn btn-success">Send Reply</button>
           </form>
         {% endif %}
-        {% if post.user_id == session.user_id and not post.deleted %}
-          <form action="/edit/{{ post.id }}" method="get" style="display:inline;">
-            <button type="submit" class="btn btn-warning">Edit</button>
-          </form>
+      </div>
+      <hr />
+    {% endfor %}
+  </div>
 
-          <form action="/remove/{{ post.id }}" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-danger">Delete post</button>
-          </form>
-        {% endif %}
-      </p>
-
-      {% if request.args.get('reply_to') and request.args.get('reply_to')|int == post.id %}
-        <form action="/reply/{{ post.id }}" method="post" style="margin-top:10px;">
-          <textarea name="content" rows="3" cols="50" placeholder="Write your reply..." required></textarea><br>
-          <button type="submit" class="btn btn-success">Send Reply</button>
-        </form>
-      {% endif %}
-    </div>
-    <hr />
-  {% endfor %}
+</div>
 {% endblock %}

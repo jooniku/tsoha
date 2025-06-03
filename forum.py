@@ -25,6 +25,11 @@ def get_post_by_id_and_user(post_id, user_id):
     sql = "SELECT * FROM posts WHERE id = ? AND user_id = ?"
     return db.query(sql, [post_id, user_id])
 
+def get_user_by_id(user_id):
+    sql = "SELECT username, profile_picture FROM users WHERE id = ?"
+    result = db.execute(sql, [user_id])
+    return result
+
 def get_user_with_username(username:str):
 
     another_profile = """SELECT username,
