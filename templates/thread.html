@@ -14,24 +14,24 @@
     {% for post in posts %}
       {% set indent = indent_levels[post.id] %}
 
-      <div class="post-item" style="margin-left: {{ indent * 30 }}px;">
-        <div class="post-content">
+      <div class="post-item" style="margin-left: {{ indent * 30 }}px; border-left: 2px solid #ccc; padding-left: 10px;">
+        <div class="post-content" style="background-color: #f8f9fa; border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
           {% if post.deleted %}
             <p class="muted">[deleted]</p>
           {% else %}
             <p>
-              <a href="/user/{{ post.username }}" class="author-link">{{ post.username }}</a>
-              <span class="post-date">({{ post.created_at }})</span><br>
-              {{ post.content }}
+              <a href="/user/{{ post.username }}" class="author-link" style="font-weight: bold; color: #0079d3;">{{ post.username }}</a>
+              <span class="post-date" style="color: #6c757d;">({{ post.created_at }})</span><br>
+              <pre style="white-space: pre-wrap; font-family: 'Inter', sans-serif;">{{ post.content }}</pre>
               {% if post.edited %}
-                <br><small><em>Edited on {{ post.edit_time }}</em></small>
+                <br><small><em style="color: #6c757d;">Edited on {{ post.edit_time }}</em></small>
               {% endif %}
             </p>
           {% endif %}
         </div>
 
         {% if session.user_id and not post.deleted %}
-          <div class="post-actions">
+          <div class="post-actions" style="display: flex; gap: 8px;">
             <form method="get" action="{{ url_for('show_thread', thread_id=thread.id) }}" class="inline-form">
               <input type="hidden" name="reply_to" value="{{ post.id }}">
               <button type="submit" class="btn btn-primary">Reply</button>
@@ -55,7 +55,6 @@
           </form>
         {% endif %}
       </div>
-      <hr />
     {% endfor %}
   </div>
 

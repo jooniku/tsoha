@@ -5,9 +5,7 @@
   border-radius: 50%;
 }
 
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
-
 
 .navbar {
   display: flex;
@@ -64,7 +62,6 @@
   font-weight: 500;
 }
 
-
 body {
   margin: 0;
   padding: 0;
@@ -120,7 +117,6 @@ select:focus {
   outline: none;
 }
 
-
 button,
 input[type="submit"] {
   padding: 6px 12px;               
@@ -139,7 +135,6 @@ button:hover,
 input[type="submit"]:hover {
   background-color: #1d4ed8;
 }
-
 
 img {
   max-width: 100%;
@@ -161,7 +156,6 @@ img {
 .mt-2 { margin-top: 8px; }
 .mt-4 { margin-top: 16px; }
 .mb-4 { margin-bottom: 16px; }
-
 
 .thread-list {
   margin-top: 32px;
@@ -197,6 +191,8 @@ img {
   margin-top: 10px;
   line-height: 1.5;
   color: #323334;
+  white-space: pre-wrap; /* Preserve line breaks */
+  padding: 0; /* Ensure no extra padding affects alignment */
+  text-align: left; /* Align text to the left for consistency */
+  overflow-wrap: break-word; /* Handle long words or URLs */
 }
-
-
