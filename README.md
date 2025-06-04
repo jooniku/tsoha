@@ -9,18 +9,15 @@ The idea of the project is to create a chatboard web-application, where users ca
 * Users can view other user's profiles
 * Users can see all threads
 * Users can edit and delete posts
+* Users can edit their profiles and add profile pics
+* A post has the username and profile pic of the poster
+* Users can search for threads or posts
 
 ## Future application functions
 
-* Users can edit and delete their profiles
-* Admin users can delete all posts, but not edit
-* Users can add profile picture
+* Users can delete their profiles
+* Admin users can delete posts/threads, but not edit
 * Posts can include images
-* Users can search for threads or posts
-
-## Possible future application functions
-
-* Users can send private messages
 
 ## Setup and installation
 
