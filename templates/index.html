@@ -6,16 +6,6 @@
 <div class="container text-center">
   <h1 class="main-heading">Welcome to the official website for the secret society message board!</h1>
 
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="flash-messages">
-        {% for message in messages %}
-          <p class="alert">{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
   {% if session.username %}
     <p class="greeting">Hello, <strong>{{ session.username }}</strong></p>
   {% else %}

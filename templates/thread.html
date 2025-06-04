@@ -14,7 +14,7 @@
     {% for post in posts %}
       {% set indent = indent_levels[post.id] %}
 
-      <div class="post-item" style="margin-left: {{ indent * 30 }}px; border-left: 2px solid #ccc; padding-left: 10px;">
+      <div class="post-item" style="margin-left: {{ indent * 30 }}px; border-left: 2px solid #ccc; padding-left: 2px;">
         <div class="post-content" style="background-color: #f8f9fa; border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
           {% if post.deleted %}
             <p class="muted">[deleted]</p>

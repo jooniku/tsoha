@@ -2,3 +2,4 @@ tsoha_venv/
 venv/
 database.db
 __pycache__
+static/uploads

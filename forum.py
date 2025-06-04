@@ -26,8 +26,8 @@ def get_post_by_id_and_user(post_id, user_id):
     return db.query(sql, [post_id, user_id])
 
 def get_user_by_id(user_id):
-    sql = "SELECT username, profile_picture FROM users WHERE id = ?"
-    result = db.execute(sql, [user_id])
+    sql = "SELECT username, full_name, bio, university, profile_picture FROM users WHERE id = ?"
+    result = db.query(sql, [user_id])[0]
     return result
 
 def get_user_with_username(username:str):
@@ -167,3 +167,13 @@ def find_post(query):
     like = "%" + query + "%"
     return db.query(sql, [like, like])
 
+def update_user_profile(user_id, full_name, bio, university, profile_picture_url):
+    sql = """
+        UPDATE users
+        SET full_name = ?, 
+            bio = ?, 
+            university = ?, 
+            profile_picture = ?
+        WHERE id = ?;
+        """
+    db.execute(sql, [full_name, bio, university, profile_picture_url, user_id])

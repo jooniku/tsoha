@@ -7,7 +7,7 @@
 
   <div class="profile mb-4">
     {% if user.profile_picture %}
-      <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" class="profile-pic mb-2">
+    <img src="{{ url_for('static', filename=user.profile_picture.replace('static/', '')) }}" alt="Profile Picture" class="profile-pic mb-2">
     {% else %}
       <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" class="profile-pic mb-2">
     {% endif %}
@@ -22,7 +22,6 @@
     <p class="username muted">@{{ user.username }}</p>
 
     <div class="info text-left mt-4 mb-4">
-      <p><strong>Email:</strong> {{ user.email }}</p>
       <p><strong>University:</strong> {{ user.university }}</p>
       <p><strong>Bio:</strong> {{ user.bio or 'No bio provided.' }}</p>
       <p><strong>Time created:</strong> {{ user.created_at }}</p>

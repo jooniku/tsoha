@@ -2,22 +2,34 @@
 {% block title %}Edit Profile{% endblock %}
 {% block content %}
 
-<h2>Edit Your Profile</h2>
+<div class="container mt-4">
+  <h2 class="text-center">Edit Your Profile</h2>
 
-<form method="post" enctype="multipart/form-data">
-  <label>Full Name:</label><br>
-  <input type="text" name="full_name" value="{{ user.full_name }}"><br><br>
+  <form method="post" enctype="multipart/form-data" class="profile-edit-form mt-3" style="max-width: 600px; margin: auto;">
+    <div class="form-group mb-3">
+      <label for="full_name" class="form-label">Full Name:</label>
+      <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user['full_name'] }}" placeholder="Enter your full name" required>
+    </div>
 
-  <label>Bio:</label><br>
-  <textarea name="bio" rows="4">{{ user.bio }}</textarea><br><br>
+    <div class="form-group mb-3">
+      <label for="bio" class="form-label">Bio:</label>
+      <textarea id="bio" name="bio" class="form-control" rows="4" placeholder="Tell us about yourself">{{ user['bio'] }}</textarea>
+    </div>
 
-  <label>University:</label><br>
-  <input type="text" name="university" value="{{ user.university }}"><br><br>
+    <div class="form-group mb-3">
+      <label for="university" class="form-label">University:</label>
+      <input type="text" id="university" name="university" class="form-control" value="{{ user['university'] }}" placeholder="Enter your university name" required>
+    </div>
 
-  <label>Upload New Profile Picture:</label><br>
-  <input type="file" name="profile_picture_file"><br><br>
+    <div class="form-group mb-3">
+      <label for="profile_picture_file" class="form-label">Upload New Profile Picture:</label>
+      <input type="file" id="profile_picture_file" name="profile_picture_file" class="form-control">
+    </div>
 
-  <input type="submit" value="Save Changes">
-</form>
+    <div class="text-center">
+      <button type="submit" class="btn btn-success" style="padding: 10px 20px;">Save Changes</button>
+    </div>
+  </form>
+</div>
 
 {% endblock %}

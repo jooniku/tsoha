@@ -22,7 +22,7 @@
             <div class="navbar-right">
             <span class="username">{{ session.username }}</span>
             {% if current_user.profile_picture %}
-                <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" class="profile-pic">
+                <img src="{{ url_for('static', filename=current_user.profile_picture.replace('static/', '')) }}" alt="Profile Picture" class="profile-pic mb-2">
             {% else %}
                 <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" class="profile-pic">
             {% endif %}
@@ -36,7 +36,15 @@
 
     </nav>
 
-
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+            {% for message in messages %}
+                <p class="alert">{{ message }}</p>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <!-- Here is page-specific content -->
     <div id="content">

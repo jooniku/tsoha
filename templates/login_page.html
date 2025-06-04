@@ -3,16 +3,8 @@
 {% block title %}Login Page{% endblock %}
 
 {% block content %}
+
   <div class="page-container">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <div class="flash-messages">
-          {% for message in messages %}
-            <p class="flash-message">{{ message }}</p>
-          {% endfor %}
-        </div>
-      {% endif %}
-    {% endwith %}
 
     <h2 class="section-title">Log In</h2>
 

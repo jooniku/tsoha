@@ -2,6 +2,7 @@ from flask import Flask, flash,  session, request, redirect, render_template, ab
 from flask.cli import with_appcontext
 from werkzeug.security import check_password_hash, generate_password_hash
 import sqlite3
+import os, re
 import config
 import db
 from errors import *
@@ -9,6 +10,7 @@ import forum
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = config.SECRET_KEY
+app.config['UPLOAD_FOLDER'] = config.UPLOAD_FOLDER
 
 # Register teardown
 db.init_app(app)
@@ -55,6 +57,18 @@ def allowed_file(filename):
         bool
     """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
+
+
+def secure_filename(filename):
+    """
+    Return a secure version of the provided filename.
+    This function removes any potentially unsafe characters and ensures
+    the filename is suitable for use in a filesystem.
+    """
+    filename = os.path.basename(filename)
+    filename = filename.replace(" ", "_")    
+    filename = re.sub(r'[^a-zA-Z0-9_.-]', '', filename)
+    return filename
 
 def compute_indent_levels(posts):
     posts_dict = {post["id"]: post for post in posts}
@@ -126,10 +140,6 @@ def user_page(username:str):
 
     return render_template("/user_page.html", user=user, posts=posts)
 
-@app.route("/edit_profile", methods=["GET", "POST"])
-def edit_profile():
-    authenticate_user("lll")
-    # not finished
     
 @app.route("/all_threads", methods=["GET", "POST"])
 def all_threads():
@@ -153,6 +163,7 @@ def show_thread(thread_id):
 
 @app.route("/new_thread", methods=["POST"])
 def new_thread():
+    authenticate_user()
     title = request.form["title"]
     content = request.form["content"]
     topic_id = request.form["topic_id"]
@@ -279,3 +290,35 @@ def find_post():
         query = ""
         results = []
     return render_template("find_post.html", query=query, results=results)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+def edit_profile():
+    authenticate_user()
+
+    user_id = session['user_id']
+    user = forum.get_user_by_id(user_id)
+
+    if request.method == 'POST':
+        full_name = request.form['full_name']
+        bio = request.form['bio']
+        university = request.form['university']
+
+        profile_picture_file = request.files['profile_picture_file']
+        if profile_picture_file and profile_picture_file.filename != '':
+            filename = secure_filename(profile_picture_file.filename)
+            if allowed_file(filename):
+                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                profile_picture_file.save(filepath)
+                profile_picture_url = filepath
+            else:
+                flash(f"Invalid file type. Allowed types are: {config.ALLOWED_EXTENSIONS}")
+                return redirect(url_for('edit_profile'))
+        else:
+            profile_picture_url = user["profile_picture"]
+
+        forum.update_user_profile(user_id, full_name, bio, university, profile_picture_url)
+
+        flash("Profile updated successfully.")
+        return redirect(url_for('edit_profile'))
+
+    return render_template('edit_profile.html', user=user)

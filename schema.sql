@@ -2,7 +2,6 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
-    email TEXT UNIQUE,
     password_hash TEXT NOT NULL,
     full_name TEXT,
     bio TEXT,
@@ -36,18 +35,6 @@ CREATE TABLE posts (
     deleted BOOLEAN DEFAULT 0,
     FOREIGN KEY(thread_id) REFERENCES threads(id),
     FOREIGN KEY(user_id) REFERENCES users(id)
-);
-
--- Private Messages
-CREATE TABLE private_messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    sender_id INTEGER NOT NULL,
-    receiver_id INTEGER NOT NULL,
-    content TEXT NOT NULL,
-    read BOOLEAN DEFAULT 0,
-    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(sender_id) REFERENCES users(id),
-    FOREIGN KEY(receiver_id) REFERENCES users(id)
 );
 
 
