@@ -37,7 +37,7 @@ def get_user_with_username(username:str):
 
     another_profile = """SELECT username,
         full_name, bio,
-        profile_picture, university
+        profile_picture, university, created_at
         FROM users
         WHERE username = ?
         """

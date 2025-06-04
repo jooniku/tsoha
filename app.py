@@ -261,18 +261,25 @@ def register():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
 
+    if not validate_username(username):
+        return "Error: Invalid username. Must be 3-20 characters long and contain only letters, numbers, and underscores."
+
     if password1 != password2:
         return "Error: Passwords do not match."
-    
+
     password_hash = generate_password_hash(password1)
 
     try:
         forum.create_user(username, password_hash)
     except sqlite3.IntegrityError:
-        return "Error: username taken."
+        return "Error: Username taken."
 
     flash("Your registration was successful!")
     return redirect("/login_page")
+
+def validate_username(username):
+    # Username must be 3-20 characters long and contain only letters, numbers, and underscores
+    return re.match(r'^\w{3,20}$', username) is not None
     
 
 @app.route("/logout", methods=["POST", "GET"])
