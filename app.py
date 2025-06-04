@@ -213,8 +213,8 @@ def edit(post_id):
     authenticate_user()
 
     user_id = session["user_id"]
-
-    post = forum.get_post_by_id_and_user(post_id, user_id)[0]
+    
+    post = forum.get_post_by_id_and_user(post_id, user_id)
     if not post:
         return "Post not found or you don't have permission", 404
 

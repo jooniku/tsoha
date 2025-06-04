@@ -22,8 +22,13 @@ def get_thread_id_by_post(post_id):
     return db.query(sql, [post_id])[0][0]
 
 def get_post_by_id_and_user(post_id, user_id):
-    sql = "SELECT * FROM posts WHERE id = ? AND user_id = ?"
-    return db.query(sql, [post_id, user_id])
+    try:
+        sql = """SELECT thread_id, content,
+        created_at, reply_to, edited, edit_time, deleted
+        FROM posts WHERE id = ? AND user_id = ?"""
+        return db.query(sql, [post_id, user_id])[0]
+    except IndexError as e:
+        return None
 
 def get_user_by_id(user_id):
     sql = "SELECT username, full_name, bio, university, profile_picture FROM users WHERE id = ?"
