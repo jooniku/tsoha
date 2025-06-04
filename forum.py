@@ -27,7 +27,10 @@ def get_post_by_id_and_user(post_id, user_id):
 
 def get_user_by_id(user_id):
     sql = "SELECT username, full_name, bio, university, profile_picture FROM users WHERE id = ?"
-    result = db.query(sql, [user_id])[0]
+    try:
+        result = db.query(sql, [user_id])[0]
+    except IndexError as e:
+        return None
     return result
 
 def get_user_with_username(username:str):
@@ -40,7 +43,7 @@ def get_user_with_username(username:str):
         """
     
     own_profile = """SELECT username,
-        email, full_name, bio,
+        full_name, bio,
         profile_picture, university, is_admin, created_at
         FROM users
         WHERE username = ?
@@ -61,7 +64,7 @@ def get_posts(thread_id):
     """Get all posts to a specific thread.
     """
     sql = """SELECT p.id, p.content, p.created_at, p.user_id, p.reply_to,
-            p.deleted, p.edited, p.edit_time, u.username
+            p.deleted, p.edited, p.edit_time, u.username, u.profile_picture
             FROM posts p, users u
             WHERE p.user_id = u.id AND p.thread_id = ?
             ORDER BY p.id"""
@@ -69,15 +72,18 @@ def get_posts(thread_id):
 
 def get_posts_by_username(username):
     sql = """
-        SELECT posts.id, posts.content, posts.created_at, posts.thread_id, threads.title AS thread_title
-        FROM posts
-        JOIN users ON posts.user_id = users.id
-        JOIN threads ON posts.thread_id = threads.id
+        SELECT p.id, p.content, p.created_at, p.thread_id, users.profile_picture, threads.title AS thread_title
+        FROM posts p
+        JOIN users ON p.user_id = users.id
+        JOIN threads ON p.thread_id = threads.id
         WHERE users.username = ?
-        ORDER BY posts.created_at DESC
+        ORDER BY p.created_at DESC
     """
     return db.query(sql, [username])
 
+def create_user(username, password_hash, profile_picture="static/images/mysterious_avatar.jpg"):
+    sql = "INSERT INTO users (username, password_hash, profile_picture) VALUES (?, ?, ?)"
+    db.execute(sql, [username, password_hash, profile_picture])
 
 def get_all_threads():
     sql = """SELECT threads.id, threads.title, threads.topic_id, topics.name AS topic_name,
@@ -112,7 +118,7 @@ def add_thread(title, content, topic_id, user_id):
     sql = "INSERT INTO threads (title, topic_id, user_id) VALUES (?, ?, ?)"
     db.execute(sql, [title, topic_id, user_id])
     thread_id = db.last_insert_id()
-    add_post(content, user_id, thread_id)
+    add_post(content=content, user_id=user_id, thread_id=thread_id)
     flash("Thread created successfully")
     return thread_id
     

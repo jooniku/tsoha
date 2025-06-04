@@ -21,11 +21,7 @@
         {% if session.username %}
             <div class="navbar-right">
             <span class="username">{{ session.username }}</span>
-            {% if current_user.profile_picture %}
-                <img src="{{ url_for('static', filename=current_user.profile_picture.replace('static/', '')) }}" alt="Profile Picture" class="profile-pic mb-2">
-            {% else %}
-                <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" class="profile-pic">
-            {% endif %}
+            <img src="{{ url_for('static', filename=current_user.profile_picture.replace('static/', '')) }}" alt="Profile Picture" class="profile-pic mb-2">
             </div>
         {% else %}
             <div class="navbar-left">

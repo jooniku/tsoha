@@ -5,7 +5,7 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL,
     full_name TEXT,
     bio TEXT,
-    profile_picture TEXT,  -- URL or file path
+    profile_picture TEXT NOT NULL,  -- URL or file path
     university TEXT,
     is_admin BOOLEAN DEFAULT 0,  -- 1 = admin, 0 = regular user
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP

@@ -102,7 +102,7 @@ def get_latest_posts(num_posts=10):
         JOIN users ON posts.user_id = users.id
         ORDER BY posts.created_at DESC
         LIMIT ?
-    """
+        """
     return db.query(sql, [num_posts])
 
 
@@ -156,7 +156,7 @@ def show_thread(thread_id):
     thread = forum.get_thread(thread_id)
     posts = forum.get_posts(thread_id)
     topics = forum.get_all_topics()
-
+    
     indent_levels, posts_dict = compute_indent_levels(posts)
     return render_template("thread.html", thread=thread, posts=posts, indent_levels=indent_levels, posts_dict=posts_dict, topics=topics)
 
@@ -168,8 +168,9 @@ def new_thread():
     content = request.form["content"]
     topic_id = request.form["topic_id"]
     user_id = session["user_id"]
+    print(session.get("profile_picture"))
 
-    thread_id = forum.add_thread(title, content, topic_id, user_id)
+    thread_id = forum.add_thread(title=title, content=content, topic_id=topic_id, user_id=user_id)
     return redirect("/thread/" + str(thread_id))
 
 @app.route("/reply/<int:post_id>", methods=["POST"])
@@ -247,6 +248,7 @@ def login():
         if check_password_hash(password_hash, password):
             session["username"] = username
             session["user_id"] = user_id
+            session["profile_picture"] = forum.get_user_by_id(user_id)["profile_picture"]
             return redirect("/")
         else: raise PasswordsDoNotMatch
     except (IndexError, PasswordsDoNotMatch):
@@ -265,8 +267,7 @@ def register():
     password_hash = generate_password_hash(password1)
 
     try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+        forum.create_user(username, password_hash)
     except sqlite3.IntegrityError:
         return "Error: username taken."
 

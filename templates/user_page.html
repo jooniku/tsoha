@@ -6,11 +6,7 @@
 <div class="container text-center">
 
   <div class="profile mb-4">
-    {% if user.profile_picture %}
     <img src="{{ url_for('static', filename=user.profile_picture.replace('static/', '')) }}" alt="Profile Picture" class="profile-pic mb-2">
-    {% else %}
-      <img src="{{ url_for('static', filename='images/mysterious_avatar.jpg') }}" alt="Default Avatar" class="profile-pic mb-2">
-    {% endif %}
 
     {% if session.username == user.username %}
       <div class="mb-3">
