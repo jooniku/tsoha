@@ -23,7 +23,7 @@ The idea of the project is to create a chatboard web-application, where users ca
 
 First create a virtual environment
 ```
-python3 -m venv venv
+python3 -m venv venv && source venv/bin/activate
 ```
 Install flask
 ```
