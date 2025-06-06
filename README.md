@@ -33,7 +33,7 @@ pip install flask
 In order to initialize the database, run
 
 ```
-flask init-db
+flask init-db && mkdir static/uploads
 ```
 
 Then to start the application, run
