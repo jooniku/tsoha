@@ -9,7 +9,11 @@
     <h2>{{ thread.title }}{% if thread.topic_name %} in topic: {{ thread.topic_name }}{% else %} (No topic){% endif %}</h2>
     <p class="muted">{{ thread.total }} posts in thread, most recent {{ thread.last }}</p>
   </div>
-
+  {% if session.user_id == thread.user_id or session.is_admin %}
+  <form action="{{ url_for('delete_thread', thread_id=thread.id) }}" method="post" style="margin-bottom: 20px;">
+    <button type="submit" class="btn btn-danger">Delete Thread</button>
+  </form>
+  {% endif %}
   <div class="posts-section">
     {% for post in posts %}
       {% set indent = indent_levels[post.id] %}

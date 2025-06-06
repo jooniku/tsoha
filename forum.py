@@ -1,4 +1,4 @@
-from flask import Flask, flash, session
+from flask import flash, session
 import db
 
 
@@ -151,6 +151,20 @@ def delete_post(post_id, user_id):
         WHERE id = ? AND user_id = ?
     """
     db.execute(sql, [post_id, user_id])
+
+def delete_thread(thread_id):
+    """Delete thread. Does not require
+    user_id to be the same as thread.user_id
+    Due to admin users being able to delete threads."""
+    
+    delete_all_posts_on_thread(thread_id=thread_id)
+    
+    sql = """DELETE FROM threads WHERE id = ?"""
+    db.execute(sql, [thread_id])
+
+def delete_all_posts_on_thread(thread_id):
+    sql = "DELETE FROM posts WHERE thread_id = ?"
+    db.execute(sql, [thread_id])
 
 
 def find_post(query):

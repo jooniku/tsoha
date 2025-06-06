@@ -10,7 +10,7 @@ import forum
 
 app = Flask(__name__, template_folder="templates")
 app.secret_key = config.SECRET_KEY
-app.config['UPLOAD_FOLDER'] = config.UPLOAD_FOLDER
+app.config["UPLOAD_FOLDER"] = config.UPLOAD_FOLDER
 
 # Register teardown
 db.init_app(app)
@@ -56,7 +56,7 @@ def allowed_file(filename):
     Returns:
         bool
     """
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in config.ALLOWED_EXTENSIONS
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in config.ALLOWED_EXTENSIONS
 
 
 def secure_filename(filename):
@@ -67,7 +67,7 @@ def secure_filename(filename):
     """
     filename = os.path.basename(filename)
     filename = filename.replace(" ", "_")    
-    filename = re.sub(r'[^a-zA-Z0-9_.-]', '', filename)
+    filename = re.sub(r"[^a-zA-Z0-9_.-]", "", filename)
     return filename
 
 def compute_indent_levels(posts):
@@ -106,7 +106,7 @@ def get_latest_posts(num_posts=10):
     return db.query(sql, [num_posts])
 
 
-@app.cli.command('init-db')
+@app.cli.command("init-db")
 @with_appcontext
 def init_db_command():
     """Initialize the database."""
@@ -246,9 +246,11 @@ def login():
     try:
         user_id, password_hash = db.query(sql, [username])[0]
         if check_password_hash(password_hash, password):
+            user = forum.get_user_by_id(user_id)
             session["username"] = username
             session["user_id"] = user_id
-            session["profile_picture"] = forum.get_user_by_id(user_id)["profile_picture"]
+            session["profile_picture"] = user["profile_picture"]
+            session["is_admin"] = user["is_admin"]
             return redirect("/")
         else: raise PasswordsDoNotMatch
     except (IndexError, PasswordsDoNotMatch):
@@ -279,7 +281,7 @@ def register():
 
 def validate_username(username):
     # Username must be 3-20 characters long and contain only letters, numbers, and underscores
-    return re.match(r'^\w{3,20}$', username) is not None
+    return re.match(r"^\w{3,20}$", username) is not None
     
 
 @app.route("/logout", methods=["POST", "GET"])
@@ -299,34 +301,46 @@ def find_post():
         results = []
     return render_template("find_post.html", query=query, results=results)
 
-@app.route('/edit_profile', methods=['GET', 'POST'])
+@app.route("/edit_profile", methods=["GET", "POST"])
 def edit_profile():
     authenticate_user()
 
-    user_id = session['user_id']
+    user_id = session["user_id"]
     user = forum.get_user_by_id(user_id)
 
-    if request.method == 'POST':
-        full_name = request.form['full_name']
-        bio = request.form['bio']
-        university = request.form['university']
+    if request.method == "POST":
+        full_name = request.form["full_name"]
+        bio = request.form["bio"]
+        university = request.form["university"]
 
-        profile_picture_file = request.files['profile_picture_file']
-        if profile_picture_file and profile_picture_file.filename != '':
+        profile_picture_file = request.files["profile_picture_file"]
+        if profile_picture_file and profile_picture_file.filename != "":
             filename = secure_filename(profile_picture_file.filename)
             if allowed_file(filename):
-                filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
                 profile_picture_file.save(filepath)
                 profile_picture_url = filepath
             else:
                 flash(f"Invalid file type. Allowed types are: {config.ALLOWED_EXTENSIONS}")
-                return redirect(url_for('edit_profile'))
+                return redirect(url_for("edit_profile"))
         else:
             profile_picture_url = user["profile_picture"]
 
         forum.update_user_profile(user_id, full_name, bio, university, profile_picture_url)
 
         flash("Profile updated successfully.")
-        return redirect(url_for('edit_profile'))
+        return redirect(url_for("edit_profile"))
 
-    return render_template('edit_profile.html', user=user)
+    return render_template("edit_profile.html", user=user)
+
+@app.route("/thread/delete/<int:thread_id>", methods=["POST"])
+def delete_thread(thread_id):
+    thread = forum.get_thread(thread_id)
+    if session.get("user_id") != thread["user_id"] and not session.get("is_admin", False):
+        abort(403)
+
+
+    forum.delete_thread(thread_id)
+
+    flash("Thread deleted successfully.")
+    return redirect(url_for("all_threads"))
