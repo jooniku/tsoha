@@ -35,17 +35,21 @@
 
   <div class="mt-4">
     <h2 class="text-center">All Threads</h2>
-    {% for thread in threads %}
-      <div class="mb-4">
-        <p>
-          <a href="/thread/{{ thread.id }}"><strong>{{ thread.title }}</strong></a>
-          <br />
-          <small>in {{ thread.topic_name or 'No topic' }}</small>
-        </p>
-        <p>{{ thread.total }} posts, most recent: {{ thread.last }}</p>
-        <hr />
-      </div>
-    {% endfor %}
+    {% if threads %}
+      {% for thread in threads %}
+        <div class="mb-4">
+          <p>
+            <a href="/thread/{{ thread.id }}"><strong>{{ thread.title }}</strong></a>
+            <br />
+            <small>in {{ thread.topic_name or 'No topic' }}</small>
+          </p>
+          <p>{{ thread.total }} posts, most recent: {{ thread.last }}</p>
+          <hr />
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No threads yet.</p>
+    {% endif %}
   </div>
 
 </div>

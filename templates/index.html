@@ -14,21 +14,24 @@
 
   <div class="thread-list mt-4">
     <h2>Latest posts</h2>
-
-    {% for post in posts %}
-      <div class="thread-card">
-        {% if post.deleted %}
-          <p><em>This post was deleted.</em></p>
-        {% else %}
-          <p>
-            <strong>{{ post.username }}</strong> in
-            <a href="/thread/{{ post.thread_id }}" class="thread-link">{{ post.thread_title }}</a>
-          </p>
-          <p class="post-meta">Posted on {{ post.created_at }}</p>
-          <p class="post-content">{{ post.content }}</p>
-        {% endif %}
-      </div>
-    {% endfor %}
+    {% if posts %}
+      {% for post in posts %}
+        <div class="thread-card">
+          {% if post.deleted %}
+            <p><em>This post was deleted.</em></p>
+          {% else %}
+            <p>
+              <strong>{{ post.username }}</strong> in
+              <a href="/thread/{{ post.thread_id }}" class="thread-link">{{ post.thread_title }}</a>
+            </p>
+            <p class="post-meta">Posted on {{ post.created_at }}</p>
+            <p class="post-content">{{ post.content }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No posts.</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
