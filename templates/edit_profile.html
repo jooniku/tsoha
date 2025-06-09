@@ -13,7 +13,7 @@
 
     <div class="form-group mb-3">
       <label for="bio" class="form-label">Bio:</label>
-      <textarea id="bio" name="bio" class="form-control" rows="4" placeholder="Tell us about yourself">{{ user['bio'] }}</textarea>
+      <textarea id="bio" name="bio" class="form-control" rows="4" placeholder="Tell us about yourself">{{ user["bio"] }}</textarea>
     </div>
 
     <div class="form-group mb-3">
@@ -25,6 +25,12 @@
       <label for="profile_picture_file" class="form-label">Upload New Profile Picture:</label>
       <input type="file" id="profile_picture_file" name="profile_picture_file" class="form-control">
     </div>
+
+  <div class="form-group mb-3 form-check text-center">
+    <input type="checkbox" id="is_admin" name="is_admin" class="form-check-input" {% if user["is_admin"] %}checked{% endif %}>
+    <label for="is_admin" class="form-check-label ms-2">Make me an admin</label>
+  </div>
+
 
     <div class="text-center">
       <button type="submit" class="btn btn-success" style="padding: 10px 20px;">Save Changes</button>

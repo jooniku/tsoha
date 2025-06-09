@@ -312,6 +312,7 @@ def edit_profile():
         full_name = request.form["full_name"]
         bio = request.form["bio"]
         university = request.form["university"]
+        is_admin = request.form["is_admin"]
 
         profile_picture_file = request.files["profile_picture_file"]
         if profile_picture_file and profile_picture_file.filename != "":
@@ -326,7 +327,7 @@ def edit_profile():
         else:
             profile_picture_url = user["profile_picture"]
 
-        forum.update_user_profile(user_id, full_name, bio, university, profile_picture_url)
+        forum.update_user_profile(user_id, full_name, bio, university, profile_picture_url, is_admin)
 
         flash("Profile updated successfully.")
         return redirect(url_for("edit_profile"))
@@ -338,7 +339,6 @@ def delete_thread(thread_id):
     thread = forum.get_thread(thread_id)
     if session.get("user_id") != thread["user_id"] and not session.get("is_admin", False):
         abort(403)
-
 
     forum.delete_thread(thread_id)
 

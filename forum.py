@@ -192,13 +192,14 @@ def find_post(query):
     like = "%" + query + "%"
     return db.query(sql, [like, like])
 
-def update_user_profile(user_id, full_name, bio, university, profile_picture_url):
+def update_user_profile(user_id, full_name, bio, university, profile_picture_url, is_admin):
     sql = """
         UPDATE users
         SET full_name = ?, 
             bio = ?, 
             university = ?, 
-            profile_picture = ?
+            profile_picture = ?,
+            is_admin = ?
         WHERE id = ?;
         """
-    db.execute(sql, [full_name, bio, university, profile_picture_url, user_id])
+    db.execute(sql, [full_name, bio, university, profile_picture_url, is_admin, user_id])
