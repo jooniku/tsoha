@@ -30,41 +30,6 @@ def get_post_by_id_and_user(post_id, user_id):
     except IndexError as e:
         return None
 
-def get_user_by_id(user_id):
-    sql = "SELECT username, full_name, bio, university, profile_picture, is_admin FROM users WHERE id = ?"
-    try:
-        result = db.query(sql, [user_id])[0]
-    except IndexError as e:
-        return None
-    return result
-
-def get_user_with_username(username:str):
-
-    another_profile = """SELECT username,
-        full_name, bio,
-        profile_picture, university, created_at
-        FROM users
-        WHERE username = ?
-        """
-    
-    own_profile = """SELECT username,
-        full_name, bio,
-        profile_picture, university, is_admin, created_at
-        FROM users
-        WHERE username = ?
-        """
-    
-    if username == session.get("username"):
-        sql = own_profile
-    else:
-        sql = another_profile
-
-    try:
-        user = db.query(sql, [username])[0]
-    except IndexError:
-        return "Error: No such profile found"
-    return user
-
 def get_posts(thread_id):
     """Get all posts to a specific thread.
     """
@@ -85,10 +50,6 @@ def get_posts_by_username(username):
         ORDER BY p.created_at DESC
     """
     return db.query(sql, [username])
-
-def create_user(username, password_hash, profile_picture="static/images/mysterious_avatar.jpg"):
-    sql = "INSERT INTO users (username, password_hash, profile_picture) VALUES (?, ?, ?)"
-    db.execute(sql, [username, password_hash, profile_picture])
 
 def get_all_threads():
     sql = """SELECT threads.id, threads.title, threads.topic_id, topics.name AS topic_name,
@@ -143,7 +104,6 @@ def edit_post(post_id, user_id, new_content):
     """
     db.execute(sql, [new_content, post_id, user_id])
 
-
 def delete_post(post_id, user_id):
     sql = """
         UPDATE posts
@@ -165,7 +125,6 @@ def delete_thread(thread_id):
 def delete_all_posts_on_thread(thread_id):
     sql = "DELETE FROM posts WHERE thread_id = ?"
     db.execute(sql, [thread_id])
-
 
 def find_post(query):
     """Function to search the formun's threads
@@ -192,14 +151,3 @@ def find_post(query):
     like = "%" + query + "%"
     return db.query(sql, [like, like])
 
-def update_user_profile(user_id, full_name, bio, university, profile_picture_url, is_admin):
-    sql = """
-        UPDATE users
-        SET full_name = ?, 
-            bio = ?, 
-            university = ?, 
-            profile_picture = ?,
-            is_admin = ?
-        WHERE id = ?;
-        """
-    db.execute(sql, [full_name, bio, university, profile_picture_url, is_admin, user_id])

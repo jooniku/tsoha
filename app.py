@@ -1,6 +1,6 @@
 from flask import Flask, flash,  session, request, redirect, render_template, abort, url_for
 from flask.cli import with_appcontext
-import user
+import user_service
 import os, re
 import config
 import db
@@ -23,7 +23,7 @@ def init_topics():
 def inject_user():
     user = None
     if "user_id" in session:
-        user = forum.get_user_by_id(session["user_id"])
+        user = user_service.get_user_by_id(session["user_id"])
     return dict(current_user=user)
 
 def authenticate_user(username:str=None):
@@ -129,12 +129,12 @@ def register_page():
 
 @app.route("/user/<username>")
 def user_page(username:str):
-    """Return user page if logged in. Else goto login.
+    """Return user page if logged in.
 
     Returns:
         _type_: _description_
     """
-    user = forum.get_user_with_username(username)
+    user = user_service.get_user_with_username(username)
     posts = forum.get_posts_by_username(username)
 
     return render_template("/user_page.html", user=user, posts=posts)
@@ -167,7 +167,6 @@ def new_thread():
     content = request.form["content"]
     topic_id = request.form["topic_id"]
     user_id = session["user_id"]
-    print(session.get("profile_picture"))
 
     thread_id = forum.add_thread(title=title, content=content, topic_id=topic_id, user_id=user_id)
     return redirect("/thread/" + str(thread_id))
@@ -198,7 +197,7 @@ def remove(post_id):
     authenticate_user()
 
     user_id = session["user_id"]
-
+    
     forum.delete_post(post_id, user_id)
 
     thread_id = forum.get_thread_id_by_post(post_id)
@@ -240,8 +239,12 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
     
-    user.login_user(username, password)
-    
+    try:
+        user_service.login_user(username, password)
+    except (IndexError, PasswordsDoNotMatch) as e:
+        return "Error: Wrong username or password"
+
+
     flash("Login successful!")
     return redirect("/")
 
@@ -252,20 +255,21 @@ def register():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
 
-    user.create_user(username, password1, password2)
+    try:
+        user_service.register_user(username, password1, password2)
+    except (UserAlreadyExists):
+        return "Error: Username taken."
 
     flash("Your registration was successful!")
     return redirect("/login_page")
 
-    
-
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
+    authenticate_user()
     session.clear()
     flash("You have been logged out.")
     return redirect("/")
-
-        
+      
 @app.route("/find_post")
 def find_post():
     query = request.args.get("query")
@@ -281,7 +285,7 @@ def edit_profile():
     authenticate_user()
 
     user_id = session["user_id"]
-    user = forum.get_user_by_id(user_id)
+    user = user_service.get_user_by_id(user_id)
 
     if request.method == "POST":
         full_name = request.form["full_name"]
@@ -302,7 +306,7 @@ def edit_profile():
         else:
             profile_picture_url = user["profile_picture"]
 
-        forum.update_user_profile(user_id, full_name, bio, university, profile_picture_url, is_admin)
+        user_service.update_user_profile(user_id, full_name, bio, university, profile_picture_url, is_admin)
         session["is_admin"] = is_admin
 
         flash("Profile updated successfully.")
