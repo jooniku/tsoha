@@ -114,7 +114,7 @@ def delete_post(post_id, user_id):
 
 def delete_thread(thread_id):
     """Delete thread. Does not require
-    user_id to be the same as thread.user_id
+    user_id to be the same as thread
     Due to admin users being able to delete threads."""
     
     delete_all_posts_on_thread(thread_id=thread_id)

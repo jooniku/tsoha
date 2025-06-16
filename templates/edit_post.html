@@ -11,6 +11,8 @@
     {% endif %}
 
     <form method="post" class="styled-form mt-4">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+      
       <div class="form-group mb-4 text-start">
         <label for="content" class="form-label">Edit Message:</label>
         <textarea id="content" name="content" rows="6" class="form-control" required>{{ post.content }}</textarea>
@@ -20,6 +22,7 @@
         <a href="/thread/{{ post.thread_id }}" class="btn btn-secondary">Cancel</a>
       </div>
     </form>
+
 
   </div>
 {% endblock %}

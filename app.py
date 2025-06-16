@@ -1,6 +1,7 @@
 from flask import Flask, flash,  session, request, redirect, render_template, abort, url_for
 from flask.cli import with_appcontext
 import user_service
+import secrets
 import os, re
 import config
 import db
@@ -25,6 +26,18 @@ def inject_user():
     if "user_id" in session:
         user = user_service.get_user_by_id(session["user_id"])
     return dict(current_user=user)
+
+def check_csrf():
+    token_in_form = request.form.get("csrf_token")
+    token_in_session = session.get("csrf_token")
+
+    if not token_in_form or not token_in_session or token_in_form != token_in_session:
+        abort(403)
+
+@app.before_request
+def generate_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(16)
 
 def authenticate_user(username:str=None):
     """Helper function to check
@@ -140,7 +153,7 @@ def user_page(username:str):
     return render_template("/user_page.html", user=user, posts=posts)
 
     
-@app.route("/all_threads", methods=["GET", "POST"])
+@app.route("/all_threads", methods=["GET"])
 def all_threads():
     topics = db.query("SELECT id, name FROM topics")
     threads = forum.get_all_threads()
@@ -163,6 +176,7 @@ def show_thread(thread_id):
 @app.route("/new_thread", methods=["POST"])
 def new_thread():
     authenticate_user()
+    check_csrf()
     title = request.form["title"]
     content = request.form["content"]
     topic_id = request.form["topic_id"]
@@ -174,6 +188,7 @@ def new_thread():
 @app.route("/reply/<int:post_id>", methods=["POST"])
 def reply(post_id):
     authenticate_user()
+    check_csrf()
     content = request.form.get("content", "").strip()
     user_id = session.get("user_id")
 
@@ -195,7 +210,7 @@ def reply(post_id):
 @app.route("/remove/<int:post_id>", methods=["POST"])
 def remove(post_id):
     authenticate_user()
-
+    check_csrf()
     user_id = session["user_id"]
     
     forum.delete_post(post_id, user_id)
@@ -209,14 +224,16 @@ def remove(post_id):
 @app.route("/edit/<int:post_id>", methods=["GET", "POST"])
 def edit(post_id):
     authenticate_user()
-
+    
     user_id = session["user_id"]
     
     post = forum.get_post_by_id_and_user(post_id, user_id)
+
     if not post:
         return "Post not found or you don't have permission", 404
 
     if request.method == "POST":
+        check_csrf()
         content = request.form.get("content")
         if not content or content.strip() == "":
             error = "Content cannot be empty."
@@ -265,7 +282,7 @@ def register():
 
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
-    authenticate_user()
+    check_csrf()
     session.clear()
     flash("You have been logged out.")
     return redirect("/")
@@ -284,10 +301,12 @@ def find_post():
 def edit_profile():
     authenticate_user()
 
+
     user_id = session["user_id"]
     user = user_service.get_user_by_id(user_id)
 
     if request.method == "POST":
+        check_csrf()
         full_name = request.form["full_name"]
         bio = request.form["bio"]
         university = request.form["university"]
@@ -316,6 +335,8 @@ def edit_profile():
 
 @app.route("/thread/delete/<int:thread_id>", methods=["POST"])
 def delete_thread(thread_id):
+    check_csrf()
+
     thread = forum.get_thread(thread_id)
     if session.get("user_id") != thread["user_id"] and not session.get("is_admin", False):
         abort(403)

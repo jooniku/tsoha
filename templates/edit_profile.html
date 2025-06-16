@@ -6,6 +6,7 @@
   <h2 class="text-center">Edit Your Profile</h2>
 
   <form method="post" enctype="multipart/form-data" class="profile-edit-form mt-3" style="max-width: 600px; margin: auto;">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     
     <div class="form-group mb-3">
       <label for="full_name" class="form-label">Full Name:</label>

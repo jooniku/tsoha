@@ -1,8 +1,8 @@
-import sqlite3
+import secrets
 import re
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import session
-import forum, db
+import db
 from errors import *
 
 
@@ -28,6 +28,7 @@ def login_user(username, password):
         session["user_id"] = user_id
         session["profile_picture"] = user["profile_picture"]
         session["is_admin"] = user["is_admin"]
+        session["csrf_token"] = secrets.token_hex(16)
     else: 
         raise PasswordsDoNotMatch
 
@@ -41,9 +42,10 @@ def register_user(username, password1, password2):
 
     password_hash = generate_password_hash(password1)
 
-    if not username_exists(username):
-        create_user(username, password_hash)
-    else: raise UserAlreadyExists
+    if username_exists(username):
+        raise UserAlreadyExists
+
+    create_user(username, password_hash)
 
 
 def get_user_by_id(user_id):
