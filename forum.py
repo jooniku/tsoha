@@ -31,7 +31,7 @@ def get_post_by_id_and_user(post_id, user_id):
         return None
 
 def get_user_by_id(user_id):
-    sql = "SELECT username, full_name, bio, university, profile_picture FROM users WHERE id = ?"
+    sql = "SELECT username, full_name, bio, university, profile_picture, is_admin FROM users WHERE id = ?"
     try:
         result = db.query(sql, [user_id])[0]
     except IndexError as e:
