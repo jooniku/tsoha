@@ -41,7 +41,29 @@ Then to start the application, run
 flask run
 ```
 
-## Large data testing
+## Testing with large amounts of data
+### Basic test
+Testing with large amounts of data was done as instructed in the materials after all optimizations. The code is in the "seed.py" file.
+
+Login/registration were not affected and both took 0.0 seconds.
+
+Rendering new pages was not affected and took 0.0 seconds.
+
+Search was also not affected by 10 000 threads and the search for "thread" took 0.0 seconds.
+
+### Large test
+In this test the amount of the data were increased by __100X__. There were close to 10 000 000 posts and 1 000 000 threads.
+
+The loading of the home page took 25.9 seconds.
+
+The loading of the all_threads page took 36.9 seconds.
+
+Logging in took 23.55 seconds.
+
+Registration was not affected and took 0.0 seconds.
+
+Creating a new thread took 1.29 seconds.
+
 
 
 ## Use of AI
