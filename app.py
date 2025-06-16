@@ -1,8 +1,8 @@
-from flask import Flask, flash,  session, request, redirect, render_template, abort, url_for
+from flask import Flask, flash,  session, request, redirect, render_template, abort, url_for, g
 from flask.cli import with_appcontext
 import user_service
 import secrets, math
-import os, re
+import os, re, time
 import config
 import db
 from errors import *
@@ -12,6 +12,7 @@ app = Flask(__name__, template_folder="templates")
 app.secret_key = config.SECRET_KEY
 app.config["UPLOAD_FOLDER"] = config.UPLOAD_FOLDER
 PAGE_SIZE = config.PAGE_SIZE
+
 
 # Register teardown
 db.init_app(app)
@@ -37,8 +38,15 @@ def check_csrf():
 
 @app.before_request
 def generate_csrf_token():
+    g.start_time = time.time()
     if "csrf_token" not in session:
         session["csrf_token"] = secrets.token_hex(16)
+
+@app.after_request
+def after_request(response):
+    elapsed_time = round(time.time() - g.start_time, 2)
+    print("elapsed time:", elapsed_time, "s")
+    return response
 
 def authenticate_user(username:str=None):
     """Helper function to check
