@@ -32,7 +32,7 @@ pip install flask
 In order to initialize the database, run
 
 ```
-flask init-db && mkdir static/uploads && python3 seed.py
+cd tsoha && flask init-db && mkdir static/uploads && python3 seed.py
 ```
 
 Then to start the application, run
