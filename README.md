@@ -20,26 +20,15 @@ The idea of the project is to create a chatboard web-application, where users ca
 
 ## Setup and installation
 
-First create a virtual environment
+Run the start-script when starting for the first time
 ```
-python3 -m venv venv && source venv/bin/activate
+./start.sh
 ```
-Install flask
-```
-pip install flask
-```
-
-In order to initialize the database, run
-
-```
-cd tsoha && flask init-db && mkdir static/uploads && python3 seed.py
-```
-
-Then to start the application, run
-
+And after just use
 ```
 flask run
 ```
+
 
 ## Testing with large amounts of data
 ### Basic test
