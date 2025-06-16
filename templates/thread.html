@@ -9,22 +9,25 @@
     <h2>{{ thread.title }}{% if thread.topic_name %} in topic: {{ thread.topic_name }}{% else %} (No topic){% endif %}</h2>
     <p class="muted">{{ thread.total }} posts in thread, most recent {{ thread.last }}</p>
   </div>
+
   {% if session.user_id == thread.user_id or session.is_admin %}
   <form action="{{ url_for('delete_thread', thread_id=thread.id) }}" method="post" style="margin-bottom: 20px;">
-    <button type="submit" class="btn btn-danger">Delete Thread</button>
+    <input type="hidden" name="confirm_delete" value="true">
+    <label for="delete-button" class="form-label visually-hidden">Delete thread button</label>
+    <button id="delete-button" type="submit" class="btn btn-danger">Delete Thread</button>
   </form>
   {% endif %}
+
   <div class="posts-section">
     {% for post in posts %}
       {% set indent = indent_levels[post.id] %}
-
       <div class="post-item" style="margin-left: {{ indent * 30 }}px; border-left: 2px solid #ccc; padding-left: 2px;">
         <div class="post-content" style="background-color: #f8f9fa; border-radius: 8px; padding: 10px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
           {% if post.deleted %}
             <p class="muted">[deleted]</p>
           {% else %}
             <div class="post-header" style="display: flex; align-items: center; margin-bottom: 10px;">
-            <img src="{{ url_for('static', filename=post.profile_picture.replace('static/', '')) }}" alt="Profile Picture" class="profile-pic mb-2" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
+              <img src="{{ url_for('static', filename=post.profile_picture.replace('static/', '')) }}" alt="Profile Picture" class="profile-pic mb-2" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;">
               <p style="margin: 0;">
                 <a href="/user/{{ post.username }}" class="author-link" style="font-weight: bold; color: #0079d3;">{{ post.username }}</a>
                 <span class="post-date" style="color: #6c757d;">({{ post.created_at }})</span>
@@ -41,24 +44,31 @@
           <div class="post-actions" style="display: flex; gap: 8px;">
             <form method="get" action="{{ url_for('show_thread', thread_id=thread.id) }}" class="inline-form">
               <input type="hidden" name="reply_to" value="{{ post.id }}">
-              <button type="submit" class="btn btn-primary">Reply</button>
+              <label for="reply-button-{{ post.id }}" class="visually-hidden">Reply to post by {{ post.username }}</label>
+              <button id="reply-button-{{ post.id }}" type="submit" class="btn btn-primary">Reply</button>
             </form>
+
             {% if post.user_id == session.user_id %}
               <form action="/edit/{{ post.id }}" method="get" class="inline-form">
-                <button type="submit" class="btn btn-warning">Edit</button>
+                <label for="edit-button-{{ post.id }}" class="visually-hidden">Edit post</label>
+                <button id="edit-button-{{ post.id }}" type="submit" class="btn btn-warning">Edit</button>
               </form>
 
               <form action="/remove/{{ post.id }}" method="post" class="inline-form">
-                <button type="submit" class="btn btn-danger">Delete</button>
+                <label for="delete-button-{{ post.id }}" class="visually-hidden">Delete post</label>
+                <button id="delete-button-{{ post.id }}" type="submit" class="btn btn-danger">Delete</button>
               </form>
             {% endif %}
           </div>
         {% endif %}
 
         {% if request.args.get('reply_to') and request.args.get('reply_to')|int == post.id %}
-          <form action="/reply/{{ post.id }}" method="post" class="reply-form">
-            <textarea name="content" rows="3" cols="50" placeholder="Write your reply..." required></textarea><br>
-            <button type="submit" class="btn btn-success">Send Reply</button>
+          <form action="/reply/{{ post.id }}" method="post" class="reply-form mt-3">
+            <div class="form-group">
+              <label for="reply-textarea-{{ post.id }}" class="form-label">Your reply to {{ post.username }}:</label>
+              <textarea id="reply-textarea-{{ post.id }}" name="content" rows="3" cols="50" class="form-control" placeholder="Write your reply..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-success mt-2">Send Reply</button>
           </form>
         {% endif %}
       </div>

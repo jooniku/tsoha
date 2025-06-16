@@ -8,15 +8,15 @@
   {% if session.username %}
     <h2 class="text-center">New Thread</h2>
 
-    <form action="/new_thread" method="post">
-      <div class="mb-4">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required />
+    <form action="/new_thread" method="post" class="mt-3" style="max-width: 600px; margin: auto;">
+      <div class="form-group mb-4">
+        <label for="title" class="form-label">Thread Title:</label>
+        <input type="text" id="title" name="title" class="form-control" placeholder="Enter thread title" required>
       </div>
 
-      <div class="mb-4">
-        <label for="topic_id">Topic:</label>
-        <select id="topic_id" name="topic_id" required>
+      <div class="form-group mb-4">
+        <label for="topic_id" class="form-label">Select Topic:</label>
+        <select id="topic_id" name="topic_id" class="form-select" required>
           <option value="">-- Select a topic --</option>
           {% for topic in topics %}
             <option value="{{ topic.id }}">{{ topic.name }}</option>
@@ -24,13 +24,16 @@
         </select>
       </div>
 
-      <div class="mb-4">
-        <label for="content">Message:</label>
-        <textarea id="content" name="content" rows="5" required></textarea>
+      <div class="form-group mb-4">
+        <label for="content" class="form-label">Initial Message:</label>
+        <textarea id="content" name="content" rows="5" class="form-control" placeholder="Write your message..." required></textarea>
       </div>
 
-      <input type="submit" value="Submit" />
+      <div class="text-center">
+        <input type="submit" value="Create Thread" class="btn btn-primary px-4 py-2">
+      </div>
     </form>
+
   {% endif %}
 
   <div class="mt-4">

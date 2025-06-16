@@ -3,34 +3,36 @@
 {% block title %}Search for Post{% endblock %}
 
 {% block content %}
-  <div class="page-container">
-    <h2 class="section-title">Search for Thread or Post</h2>
+  <div class="page-container mt-4" style="max-width: 600px; margin: auto;">
+    <h2 class="section-title text-center mb-4">Search for Thread or Post</h2>
 
-    <form action="/find_post" method="get" class="form-box">
-      <div class="form-group">
-        <label for="query">Keyword:</label>
-        <input type="text" name="query" id="query" value="{{ query }}" required />
+    <form action="/find_post" method="get" class="form-box mb-4">
+      <div class="form-group mb-3">
+        <label for="query" class="form-label">Enter a keyword to search:</label>
+        <input type="text" name="query" id="query" value="{{ query }}" class="form-control" placeholder="e.g. university, help, Python" required>
       </div>
 
-      <button type="submit" class="btn btn-primary">Search</button>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary px-4">Search</button>
+      </div>
     </form>
 
     {% if query %}
-      <h3 class="section-subtitle">Results for "{{ query }}"</h3>
+      <h3 class="section-subtitle mb-3">Results for "<em>{{ query }}</em>"</h3>
 
       {% if results %}
-        <ul class="results-list">
+        <ul class="results-list list-group">
           {% for item in results %}
-            <li class="result-item">
-              <a href="/thread/{{ item.thread_id }}" class="thread-link">{{ item.thread_title }}</a>
+            <li class="result-item list-group-item">
+              <a href="/thread/{{ item.thread_id }}" class="thread-link fw-bold">{{ item.thread_title }}</a>
               {% if item.post_id %}
-                <div class="post-snippet">{{ item.post_content }}</div>
+                <div class="post-snippet mt-2 text-muted">{{ item.post_content }}</div>
               {% endif %}
             </li>
           {% endfor %}
         </ul>
       {% else %}
-        <p>No results found.</p>
+        <p class="text-muted">No results found.</p>
       {% endif %}
     {% endif %}
   </div>
