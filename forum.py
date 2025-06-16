@@ -29,6 +29,14 @@ def get_post_by_id_and_user(post_id, user_id):
         return db.query(sql, [post_id, user_id])[0]
     except IndexError as e:
         return None
+    
+def thread_count():
+    sql = "SELECT COUNT(id) FROM threads"
+    return db.query(sql)[0][0]
+
+def post_count():
+    sql = "SELECT COUNT(id) FROM posts"
+    return db.query(sql)[0][0]
 
 def get_posts(thread_id):
     """Get all posts to a specific thread.
@@ -51,15 +59,22 @@ def get_posts_by_username(username):
     """
     return db.query(sql, [username])
 
-def get_all_threads():
-    sql = """SELECT threads.id, threads.title, threads.topic_id, topics.name AS topic_name,
-    COUNT(posts.id) AS total, MAX(posts.created_at) AS last
-    FROM threads
-    LEFT JOIN topics ON threads.topic_id = topics.id
-    LEFT JOIN posts ON posts.thread_id = threads.id
-    GROUP BY threads.id
-    ORDER BY last DESC NULLS LAST;"""
-    return db.query(sql)
+
+def get_page_threads(page, page_size):
+    sql = """
+        SELECT threads.id, threads.title, threads.topic_id, topics.name AS topic_name,
+               COUNT(posts.id) AS total, MAX(posts.created_at) AS last
+        FROM threads
+        LEFT JOIN topics ON threads.topic_id = topics.id
+        LEFT JOIN posts ON posts.thread_id = threads.id
+        GROUP BY threads.id
+        ORDER BY last DESC NULLS LAST
+        LIMIT ? OFFSET ?;
+    """
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, [limit, offset])
+
 
 def get_all_topics():
     sql = "SELECT id, name FROM topics"

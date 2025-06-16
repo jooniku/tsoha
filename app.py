@@ -1,7 +1,7 @@
 from flask import Flask, flash,  session, request, redirect, render_template, abort, url_for
 from flask.cli import with_appcontext
 import user_service
-import secrets
+import secrets, math
 import os, re
 import config
 import db
@@ -11,6 +11,7 @@ import forum
 app = Flask(__name__, template_folder="templates")
 app.secret_key = config.SECRET_KEY
 app.config["UPLOAD_FOLDER"] = config.UPLOAD_FOLDER
+PAGE_SIZE = config.PAGE_SIZE
 
 # Register teardown
 db.init_app(app)
@@ -126,7 +127,6 @@ def init_db_command():
     init_topics()
     print("Initialized the database")
 
-
 @app.route("/")
 def index():
     posts=get_latest_posts()
@@ -154,14 +154,21 @@ def user_page(username:str):
 
     
 @app.route("/all_threads", methods=["GET"])
-def all_threads():
-    topics = db.query("SELECT id, name FROM topics")
-    threads = forum.get_all_threads()
-    topics = forum.get_all_topics()
+@app.route("/all_threads/<int:page>")
+def all_threads(page=1):
+    thread_count = forum.thread_count()
+    page_count = math.ceil(thread_count / PAGE_SIZE)
+    page_count = max(page_count, 1)
 
+    if page < 1:
+        return redirect("/all_threads/1")
+    if page > page_count:
+        return redirect("/all_threads/" + str(page_count))
 
-    return render_template("/all_threads.html", threads=threads, topics=topics)
-
+    threads = forum.get_page_threads(page, PAGE_SIZE)
+    return render_template("/all_threads.html", page=page, page_count=page_count,
+                           threads=threads, topics=forum.get_all_topics(),
+                           pagination_base = "/all_threads")
 
 @app.route("/thread/<int:thread_id>")
 def show_thread(thread_id):
@@ -224,7 +231,7 @@ def remove(post_id):
 @app.route("/edit/<int:post_id>", methods=["GET", "POST"])
 def edit(post_id):
     authenticate_user()
-    
+
     user_id = session["user_id"]
     
     post = forum.get_post_by_id_and_user(post_id, user_id)
