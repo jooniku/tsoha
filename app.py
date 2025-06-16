@@ -1,7 +1,6 @@
 from flask import Flask, flash,  session, request, redirect, render_template, abort, url_for
 from flask.cli import with_appcontext
-from werkzeug.security import check_password_hash, generate_password_hash
-import sqlite3
+import user
 import os, re
 import config
 import db
@@ -241,20 +240,10 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
     
-    sql = "SELECT id, password_hash FROM users WHERE username = ?"
-
-    try:
-        user_id, password_hash = db.query(sql, [username])[0]
-        if check_password_hash(password_hash, password):
-            user = forum.get_user_by_id(user_id)
-            session["username"] = username
-            session["user_id"] = user_id
-            session["profile_picture"] = user["profile_picture"]
-            session["is_admin"] = user["is_admin"]
-            return redirect("/")
-        else: raise PasswordsDoNotMatch
-    except (IndexError, PasswordsDoNotMatch):
-        return "Error: wrong username or password"
+    user.login_user(username, password)
+    
+    flash("Login successful!")
+    return redirect("/")
 
 
 @app.route("/register", methods=["POST"])
@@ -263,25 +252,11 @@ def register():
     password1 = request.form["password1"]
     password2 = request.form["password2"]
 
-    if not validate_username(username):
-        return "Error: Invalid username. Must be 3-20 characters long and contain only letters, numbers, and underscores."
-
-    if password1 != password2:
-        return "Error: Passwords do not match."
-
-    password_hash = generate_password_hash(password1)
-
-    try:
-        forum.create_user(username, password_hash)
-    except sqlite3.IntegrityError:
-        return "Error: Username taken."
+    user.create_user(username, password1, password2)
 
     flash("Your registration was successful!")
     return redirect("/login_page")
 
-def validate_username(username):
-    # Username must be 3-20 characters long and contain only letters, numbers, and underscores
-    return re.match(r"^\w{3,20}$", username) is not None
     
 
 @app.route("/logout", methods=["POST", "GET"])
@@ -312,7 +287,7 @@ def edit_profile():
         full_name = request.form["full_name"]
         bio = request.form["bio"]
         university = request.form["university"]
-        is_admin = request.form["is_admin"]
+        is_admin = "is_admin" in request.form
 
         profile_picture_file = request.files["profile_picture_file"]
         if profile_picture_file and profile_picture_file.filename != "":
@@ -328,6 +303,7 @@ def edit_profile():
             profile_picture_url = user["profile_picture"]
 
         forum.update_user_profile(user_id, full_name, bio, university, profile_picture_url, is_admin)
+        session["is_admin"] = is_admin
 
         flash("Profile updated successfully.")
         return redirect(url_for("edit_profile"))

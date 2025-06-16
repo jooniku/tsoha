@@ -13,8 +13,7 @@
   {% if session.user_id == thread.user_id or session.is_admin %}
   <form action="{{ url_for('delete_thread', thread_id=thread.id) }}" method="post" style="margin-bottom: 20px;">
     <input type="hidden" name="confirm_delete" value="true">
-    <label for="delete-button" class="form-label visually-hidden">Delete thread button</label>
-    <button id="delete-button" type="submit" class="btn btn-danger">Delete Thread</button>
+    <button type="submit" class="btn btn-danger" aria-label="Delete Thread">Delete Thread</button>
   </form>
   {% endif %}
 
@@ -44,19 +43,16 @@
           <div class="post-actions" style="display: flex; gap: 8px;">
             <form method="get" action="{{ url_for('show_thread', thread_id=thread.id) }}" class="inline-form">
               <input type="hidden" name="reply_to" value="{{ post.id }}">
-              <label for="reply-button-{{ post.id }}" class="visually-hidden">Reply to post by {{ post.username }}</label>
-              <button id="reply-button-{{ post.id }}" type="submit" class="btn btn-primary">Reply</button>
+              <button type="submit" class="btn btn-primary" aria-label="Reply to {{ post.username }}">Reply</button>
             </form>
 
             {% if post.user_id == session.user_id %}
               <form action="/edit/{{ post.id }}" method="get" class="inline-form">
-                <label for="edit-button-{{ post.id }}" class="visually-hidden">Edit post</label>
-                <button id="edit-button-{{ post.id }}" type="submit" class="btn btn-warning">Edit</button>
+                <button type="submit" class="btn btn-warning" aria-label="Edit post">Edit</button>
               </form>
 
               <form action="/remove/{{ post.id }}" method="post" class="inline-form">
-                <label for="delete-button-{{ post.id }}" class="visually-hidden">Delete post</label>
-                <button id="delete-button-{{ post.id }}" type="submit" class="btn btn-danger">Delete</button>
+                <button type="submit" class="btn btn-danger" aria-label="Delete post">Delete</button>
               </form>
             {% endif %}
           </div>
@@ -65,8 +61,7 @@
         {% if request.args.get('reply_to') and request.args.get('reply_to')|int == post.id %}
           <form action="/reply/{{ post.id }}" method="post" class="reply-form mt-3">
             <div class="form-group">
-              <label for="reply-textarea-{{ post.id }}" class="form-label">Your reply to {{ post.username }}:</label>
-              <textarea id="reply-textarea-{{ post.id }}" name="content" rows="3" cols="50" class="form-control" placeholder="Write your reply..." required></textarea>
+              <textarea id="reply-textarea-{{ post.id }}" name="content" rows="3" cols="50" class="form-control" placeholder="Write your reply..." required aria-label="Reply content"></textarea>
             </div>
             <button type="submit" class="btn btn-success mt-2">Send Reply</button>
           </form>
