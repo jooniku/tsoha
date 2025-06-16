@@ -55,3 +55,27 @@ CREATE TABLE topics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL
 );
+
+
+
+-- Indexing
+
+-- Users
+CREATE UNIQUE INDEX idx_users_username ON users(username);
+CREATE INDEX idx_users_is_admin ON users(is_admin);
+
+-- Threads
+CREATE INDEX idx_threads_user_id ON threads(user_id);
+CREATE INDEX idx_threads_topic_id ON threads(topic_id);
+
+-- Posts
+CREATE INDEX idx_posts_thread_id ON posts(thread_id);
+CREATE INDEX idx_posts_user_id ON posts(user_id);
+CREATE INDEX idx_posts_reply_to ON posts(reply_to);
+
+-- Images
+CREATE INDEX idx_images_thread_id ON images(thread_id);
+CREATE INDEX idx_images_post_id ON images(post_id);
+
+-- Topics
+CREATE UNIQUE INDEX idx_topics_name ON topics(name);
