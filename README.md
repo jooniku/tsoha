@@ -1,5 +1,5 @@
 # Chatboard -project
-The idea of the project is to create a chatboard web-application, where users can create threads and reply to them. 
+The idea of the project is to create a chatboard web-application, where users can create threads and reply to them with posts.
 
 ## Current application functions
 
@@ -9,15 +9,14 @@ The idea of the project is to create a chatboard web-application, where users ca
 * Users can view other user's profiles
 * Users can see all threads
 * Users can edit and delete posts
+* Users can see if posts have been edited
 * Users can edit their profiles and add profile pics
 * A post has the username and profile pic of the poster
 * Users can search for threads or posts
-
-## Future application functions
-
-* Users can delete their profiles
-* Admin users can delete posts/threads, but not edit
-* Posts can include images
+* Users can become admins
+* Admins can delete any threads, but no posts or edit posts
+* User page shows user's posts
+* User can select a topic when creating a new thread
 
 ## Setup and installation
 
@@ -41,5 +40,11 @@ Then to start the application, run
 ```
 flask run
 ```
+
+## Large data testing
+
+
+## Use of AI
+The official LLM model of the university of Helsinki, CurreChat, has been used in optimizing code and helping with HTML/CSS code.
 
 
