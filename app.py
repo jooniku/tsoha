@@ -297,7 +297,6 @@ def register():
 
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
-    check_csrf()
     session.clear()
     flash("You have been logged out.")
     return redirect("/")
